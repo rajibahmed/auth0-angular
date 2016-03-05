@@ -221,7 +221,7 @@ Performs the "forgot your password" flow.
 If using `auth0.js`, it will send an email to confirm the password change. [See the documentation here](https://github.com/auth0/auth0.js#change-password-database-connections).
 
 If using Lock, the widget will be displayed in "reset password" mode.
-In this case, this method accepts the options and parameters as [`auth.signin`]((#authsigninoptions-successcallback-errorcallback).
+In this case, this method accepts the options and parameters as [`auth.signin`](#authsigninoptions-successcallback-errorcallback).
 
 #### auth.signout()
 
