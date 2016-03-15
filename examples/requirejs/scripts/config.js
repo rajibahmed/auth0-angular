@@ -5,7 +5,7 @@ require.config({
         'auth-angular':     '//cdn.auth0.com/w2/auth0-angular-4.js',
         'angular-jwt':     '//cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt',
         'angular-storage': '//cdn.rawgit.com/auth0/angular-storage/master/dist/angular-storage',
-        'auth0':            '//cdn.auth0.com/w2/auth0-6'
+        'auth0':            '//cdn.auth0.com/w2/auth0-6.7.js'
     },
     shim: {
         'angular':{ exports:'angular' },

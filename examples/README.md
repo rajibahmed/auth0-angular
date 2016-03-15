@@ -7,7 +7,7 @@ The following examples offer a good starting point for including Auth0 in your A
  * [Custom Login](custom-login): Custom login form that uses Auth0 to authenticate.
  * [Custom Signup](custom-signup): Custom signup plus extra fields added to the user profile on creation.
  * [Widget](widget): A simple angular app doing auth with social and username/password using the Login Widget.
- * [API Authentication](api-authentication): Call your protected API in the technology you want (Java, .NET, [Node.js](api-authentication/nodejs) using Auth0 generated tokens.
+ * [API Authentication](widget-with-api): Call your protected API in the technology you want (Java, .NET, [Node.js](api-authentication/nodejs) using Auth0 generated tokens.
 
 Advanced scenarios:
  * [UI Router](ui-router): A full featured example of ui-router with auth0-angular.

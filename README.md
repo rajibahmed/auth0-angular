@@ -28,7 +28,7 @@ npm install auth0-angular
 ### CDN
 
 ````html
-<script type="text/javascript" src="//cdn.auth0.com/js/lock-7.js"></script>
+<script type="text/javascript" src="//cdn.auth0.com/js/lock-8.js"></script>
 <script type="text/javascript" src="//cdn.auth0.com/w2/auth0-angular-4.js"></script>
 ````
 
@@ -129,7 +129,7 @@ If you want to use Auth0's [beautiful Lock UI](https://auth0.com/lock), you need
 
 Otherwise, if you'll use a custom UI, you need to include `auth0.js`.
 
-**It's important to note that this scripts must be included before auth0-angular**.
+**It's important to note that these scripts must be included before auth0-angular**.
 
 If you're using `bower` or `npm`, these scripts are set as dependencies of auth0-angular so that you choose the best for you. Otherwise, you can include them from the CDN:
 
@@ -137,7 +137,7 @@ If you're using `bower` or `npm`, these scripts are set as dependencies of auth0
 <!-- Either this -->
 <script type="text/javascript" src="//cdn.auth0.com/js/auth0-lock-7.js"></script>
 <!-- or -->
-<script type="text/javascript" src="//cdn.auth0.com/w2/auth0-6.js"></script>
+<script type="text/javascript" src="//cdn.auth0.com/w2/auth0-6.7.js"></script>
 ```
 
 ### SDK API
@@ -221,7 +221,7 @@ Performs the "forgot your password" flow.
 If using `auth0.js`, it will send an email to confirm the password change. [See the documentation here](https://github.com/auth0/auth0.js#change-password-database-connections).
 
 If using Lock, the widget will be displayed in "reset password" mode.
-In this case, this method accepts the options and parameters as [`auth.signin`]((#authsigninoptions-successcallback-errorcallback).
+In this case, this method accepts the options and parameters as [`auth.signin`](#authsigninoptions-successcallback-errorcallback).
 
 #### auth.signout()
 
@@ -372,6 +372,7 @@ The following events can be handled:
 * **loginSuccess**: The user has successfully logged in . In the handler, you can inject any service you want besides the `profileProfile` and `idToken` from the user.
 * **loginFailure**: There was an error trying to authenticate the user. In the handler, you can inject any service you want besides the `error` which was thrown.
 * **logout**: The user has successfully logged out.
+* **ssoLogin**: An SSO login is happening.
 * **forbidden**: An unauthorized request was made to an API, which returned an HTTP 401 response. This can mean that the user attempted to access a restricted resource, or that their token has expired.
 
 When using **redirect mode, it's mandatory to handle login events in this way**.
@@ -421,15 +422,8 @@ This is the list of all of the available tutorials & samples.
 
 Check [the CHANGELOG file](CHANGELOG.md) to see the changes from version to version.
 
-## Reporting issues
-
-If you have found a bug or have a feature request, please report it in as an issue in this repository.
-
-Please do not report security vulnerabilities in public. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-## Contributing 
+## Contributing
  [Read here how to run auth0-angular tests](docs/testing.md)
-
 
 ## What is Auth0?
 
@@ -446,3 +440,15 @@ Auth0 helps you to:
 
 1. Go to [Auth0](https://auth0.com) and click Sign Up.
 2. Use Google, GitHub or Microsoft Account to login.
+
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
+
+## Author
+
+[Auth0](auth0.com)
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
