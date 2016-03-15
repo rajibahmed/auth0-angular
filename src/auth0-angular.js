@@ -179,12 +179,12 @@
         };
       }
 
-      if (null != Auth0Widget) {
+      if (typeof Auth0Widget !== 'undefined') {
         throw new Error('Auth0Widget is not supported with this version of auth0-angular' +
           'anymore. Please try with an older one');
       }
 
-      throw new Error('Cannott initialize Auth0Angular. Auth0Lock or Auth0 must be available');
+      throw new Error('Cannot initialize Auth0Angular. Auth0Lock or Auth0 must be available');
       /* jshint ignore:end */
     }
 
