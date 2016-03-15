@@ -13,7 +13,7 @@ angular.module( 'sample.home', [
     }).then(function() {
       alert("We got the secured data successfully");
     }, function(response) {
-      if (response.status == 0) {
+      if (response.status == -1) {
         alert("Please download the API seed so that you can call it.");
       }
       else {
