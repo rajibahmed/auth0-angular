@@ -348,7 +348,7 @@
       function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
         if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
           if (config.sso) {
-            e.preventDefault();
+            if (requiresLogin) {e.preventDefault();}
             config.auth0js.getSSOData(authUtils.applied(function(err, ssoData) {
               if (ssoData.sso) {
                 var loginOptions = {
