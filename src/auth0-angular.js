@@ -290,20 +290,6 @@
             onSigninOk(hashResult.id_token, hashResult.access_token, hashResult.state, hashResult.refresh_token);
             return;
           }
-          if (config.sso) {
-            config.auth0js.getSSOData(authUtils.applied(function(err, ssoData) {
-              if (ssoData.sso) {
-                var loginOptions = {
-                  popup: false,
-                  callbackOnLocationHash: true,
-                  connection: ssoData.lastUsedConnection.name
-                };
-                callHandler('ssoLogin', { loginOptions: loginOptions });
-
-                auth.signin(loginOptions, null, null, 'Auth0');
-              }
-            }));
-          }
         }
       });
 
@@ -316,32 +302,76 @@
           if (!config.initialized) {
             return;
           }
-          if (nextRoute.$$route && nextRoute.$$route.requiresLogin) {
-            if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
+
+          verifyRoute(
+            (nextRoute.$$route && nextRoute.$$route.requiresLogin), 
+            e, 
+            function(){
+              return JSON.stringify({
+                redirect_to: {
+                  path: $location.path()
+                }
+              });
+            },
+            function(){
               $location.path(config.loginUrl);
             }
-          }
+          );
         });
       }
 
 
       if (config.loginState) {
-        $rootScope.$on('$stateChangeStart', function(e, to) {
+        $rootScope.$on('$stateChangeStart', function(e, to, toParams) {
           if (!config.initialized) {
             return;
           }
-          if (to.data && to.data.requiresLogin) {
-            if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
-              e.preventDefault();
+
+          verifyRoute(
+            (to.data && to.data.requiresLogin), 
+            e, 
+            function() {
+              return JSON.stringify({
+                redirect_to: {
+                  state: to.name,
+                  params: toParams
+                }
+              });
+            }, 
+            function() {
               $injector.get('$state').go(config.loginState);
             }
-          }
+          );
         });
       }
 
-
-
-
+      function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
+        if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
+          if (config.sso) {
+            if (requiresLogin) {e.preventDefault();}
+            config.auth0js.getSSOData(authUtils.applied(function(err, ssoData) {
+              if (ssoData.sso) {
+                var loginOptions = {
+                  popup: false,
+                  callbackOnLocationHash: true,
+                  connection: ssoData.lastUsedConnection.name,
+                  authParams: {
+                    state: getState()
+                  }
+                };
+                callHandler('ssoLogin', { loginOptions: loginOptions });
+                auth.signin(loginOptions, null, null, 'Auth0');
+              } else if (requiresLogin) {
+                e.preventDefault();
+                redirectToLogin();
+              }
+            }));
+          } else if (requiresLogin) {
+              e.preventDefault();
+              redirectToLogin();
+          }
+        }
+      }
 
       // Start auth service
 
@@ -350,9 +380,9 @@
       var checkHandlers = function(options, successCallback) {
         var successHandlers = getHandlers('loginSuccess');
         if (!successCallback && !options.username && !options.email && (!successHandlers || successHandlers.length === 0)) {
-            throw new Error('You must define a loginSuccess handler ' +
-              'if not using popup mode or not doing ro call because that means you are doing a redirect');
-          }
+          throw new Error('You must define a loginSuccess handler ' +
+            'if not using popup mode or not doing ro call because that means you are doing a redirect');
+        }
       };
 
       auth.hookEvents = function() {

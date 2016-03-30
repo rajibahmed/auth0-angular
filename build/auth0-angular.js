@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.0.5 - 2015-12-21
+ * @version v4.1.0 - 2016-02-26
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -269,19 +269,6 @@
                 onSigninOk(hashResult.id_token, hashResult.access_token, hashResult.state, hashResult.refresh_token);
                 return;
               }
-              if (config.sso) {
-                config.auth0js.getSSOData(authUtils.applied(function (err, ssoData) {
-                  if (ssoData.sso) {
-                    var loginOptions = {
-                        popup: false,
-                        callbackOnLocationHash: true,
-                        connection: ssoData.lastUsedConnection.name
-                      };
-                    callHandler('ssoLogin', { loginOptions: loginOptions });
-                    auth.signin(loginOptions, null, null, 'Auth0');
-                  }
-                }));
-              }
             }
           });
           $rootScope.$on('auth0.forbiddenRequest', function () {
@@ -292,25 +279,54 @@
               if (!config.initialized) {
                 return;
               }
-              if (nextRoute.$$route && nextRoute.$$route.requiresLogin) {
-                if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
-                  $location.path(config.loginUrl);
-                }
-              }
+              verifyRoute(nextRoute.$$route && nextRoute.$$route.requiresLogin, e, function () {
+                return JSON.stringify({ redirect_to: { path: $location.path() } });
+              }, function () {
+                $location.path(config.loginUrl);
+              });
             });
           }
           if (config.loginState) {
-            $rootScope.$on('$stateChangeStart', function (e, to) {
+            $rootScope.$on('$stateChangeStart', function (e, to, toParams) {
               if (!config.initialized) {
                 return;
               }
-              if (to.data && to.data.requiresLogin) {
-                if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
-                  e.preventDefault();
-                  $injector.get('$state').go(config.loginState);
-                }
-              }
+              verifyRoute(to.data && to.data.requiresLogin, e, function () {
+                return JSON.stringify({
+                  redirect_to: {
+                    state: to.name,
+                    params: toParams
+                  }
+                });
+              }, function () {
+                $injector.get('$state').go(config.loginState);
+              });
             });
+          }
+          function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
+            if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
+              if (config.sso) {
+                e.preventDefault();
+                config.auth0js.getSSOData(authUtils.applied(function (err, ssoData) {
+                  if (ssoData.sso) {
+                    var loginOptions = {
+                        popup: false,
+                        callbackOnLocationHash: true,
+                        connection: ssoData.lastUsedConnection.name,
+                        authParams: { state: getState() }
+                      };
+                    callHandler('ssoLogin', { loginOptions: loginOptions });
+                    auth.signin(loginOptions, null, null, 'Auth0');
+                  } else if (requiresLogin) {
+                    e.preventDefault();
+                    redirectToLogin();
+                  }
+                }));
+              } else if (requiresLogin) {
+                e.preventDefault();
+                redirectToLogin();
+              }
+            }
           }
           // Start auth service
           auth.config = config;
@@ -430,6 +446,9 @@
               auth.profile = profile;
               return profile;
             });
+          };
+          auth.hide = function (callback) {
+            config.auth0lib.hide(callback);
           };
           return auth;
         }
