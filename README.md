@@ -175,7 +175,7 @@ auth.signin({
   $location.path('/');
 }, function(error) {
   // Error
-})
+}, 'Auth0')
 ```
 
 **Redirect mode** will be used when not passing success or error callbacks.
