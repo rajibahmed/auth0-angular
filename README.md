@@ -108,7 +108,7 @@ There're many more things that you can do with `auth0-angular` in conjunction wi
 
 ### Preface: Authentication Modes
 
-There are three modes to handle authentication with all the providers (e.g. Facebook, Linkedin, GitGub, AD, LDAP) that Auth0 can handle: redirect, popup, and resource owner (`/oauth/ro`) CORS calls.
+There are three modes to handle authentication with all the providers (e.g. Facebook, Linkedin, GitHub, AD, LDAP) that Auth0 can handle: redirect, popup, and resource owner (`/oauth/ro`) CORS calls.
 
 When using **redirect mode**, the user will be redirected to the provider's login page for authentication.
 After authenticating, the user will be redirected back to the application with the requested user information in the hash fragment, which can be handled with Angular events.
