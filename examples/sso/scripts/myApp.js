@@ -34,8 +34,7 @@ myApp.config(function ($routeProvider, authProvider, $httpProvider, jwtIntercept
   });
 
   authProvider.on('loginSuccess', function($location, profilePromise, idToken, store, state) {
-    var decodedState = JSON.parse(state);
-    $location.path(decodedState.redirect_to.path);
+    $location.path('/');
     profilePromise.then(function(profile) {
       store.set('profile', profile);
       store.set('token', idToken);
