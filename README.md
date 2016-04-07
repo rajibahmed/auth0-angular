@@ -28,7 +28,7 @@ npm install auth0-angular
 ### CDN
 
 ````html
-<script type="text/javascript" src="//cdn.auth0.com/js/lock-8.js"></script>
+<script type="text/javascript" src="//cdn.auth0.com/js/lock-9.0.js"></script>
 <script type="text/javascript" src="//cdn.auth0.com/w2/auth0-angular-4.js"></script>
 ````
 
