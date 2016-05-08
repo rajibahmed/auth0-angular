@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.1.0 - 2016-02-26
+ * @version v4.1.0 - 2016-05-08
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -170,10 +170,10 @@
             constructor: window.Auth0
           };
         }
-        if (null != Auth0Widget) {
+        if (typeof Auth0Widget !== 'undefined') {
           throw new Error('Auth0Widget is not supported with this version of auth0-angular' + 'anymore. Please try with an older one');
         }
-        throw new Error('Cannott initialize Auth0Angular. Auth0Lock or Auth0 must be available');  /* jshint ignore:end */
+        throw new Error('Cannot initialize Auth0Angular. Auth0Lock or Auth0 must be available');  /* jshint ignore:end */
       }
       this.init = function (options, Auth0Constructor) {
         if (!options) {
@@ -306,7 +306,9 @@
           function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
             if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
               if (config.sso) {
-                e.preventDefault();
+                if (requiresLogin) {
+                  e.preventDefault();
+                }
                 config.auth0js.getSSOData(authUtils.applied(function (err, ssoData) {
                   if (ssoData.sso) {
                     var loginOptions = {
