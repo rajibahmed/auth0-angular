@@ -522,6 +522,7 @@
                     auth.state = null;
                     auth.accessToken = null;
                     auth.tokenPayload = null;
+                    $rootScope.profile = null;
                     callHandler('logout');
                 };
 
