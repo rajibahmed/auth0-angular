@@ -6,7 +6,7 @@
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
-    angular.module('auth0', ['auth0.service', 'auth0.utils'])
+    angular.module('auth0', ['auth0.service', 'auth0.utils', 'auth0.directives'])
         .run(["auth", function(auth) {
             auth.hookEvents();
         }]);
@@ -242,6 +242,8 @@
                     isAuthenticated: false
                 };
 
+                $rootScope.profile = null;
+
                 var getHandlers = function(anEvent) {
                     return config.eventHandlers[anEvent];
                 };
@@ -266,6 +268,8 @@
                         profile: profile,
                         isAuthenticated: true
                     };
+
+                    $rootScope.profile = response;
 
                     angular.extend(auth, response);
                     callHandler(!isRefresh ? 'loginSuccess' : 'authenticated', angular.extend({
@@ -541,3 +545,19 @@
                 return auth;
             }];
         }]);
+
+angular.module('auth0.directives', ['auth0.service'])
+    .directive('ifUser', ["$rootScope", function($rootScope){
+        return {
+            link: function(scope, element){
+                $rootScope.$watch('profile',function(userProfile){
+                    if(userProfile){
+                        element.removeClass('ng-hide');
+                    }else{
+                        element.addClass('ng-hide');
+                    }
+                });
+            }
+        };
+    }]);
+

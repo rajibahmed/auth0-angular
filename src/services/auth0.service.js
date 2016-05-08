@@ -127,6 +127,8 @@
                     isAuthenticated: false
                 };
 
+                $rootScope.profile = null;
+
                 var getHandlers = function(anEvent) {
                     return config.eventHandlers[anEvent];
                 };
@@ -151,6 +153,8 @@
                         profile: profile,
                         isAuthenticated: true
                     };
+
+                    $rootScope.profile = response;
 
                     angular.extend(auth, response);
                     callHandler(!isRefresh ? 'loginSuccess' : 'authenticated', angular.extend({

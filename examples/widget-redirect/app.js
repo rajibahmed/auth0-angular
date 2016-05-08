@@ -1,5 +1,6 @@
 angular.module( 'sample', [
   'auth0',
+  'auth0.directives',
   'ngRoute',
   'sample.home',
   'angular-storage',
@@ -26,7 +27,7 @@ angular.module( 'sample', [
     clientID: AUTH0_CLIENT_ID,
     loginUrl: '/login'
   });
-  
+
   authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
     console.log("Login Success");
     profilePromise.then(function(profile) {
@@ -55,7 +56,7 @@ angular.module( 'sample', [
   $httpProvider.interceptors.push('jwtInterceptor');
 }).run(function($rootScope, auth, store, jwtHelper, $location) {
   $rootScope.$on('$locationChangeStart', function() {
-  
+
     var token = store.get('token');
     if (token) {
       if (!jwtHelper.isTokenExpired(token)) {
@@ -77,4 +78,3 @@ angular.module( 'sample', [
     }
   });
 });
-

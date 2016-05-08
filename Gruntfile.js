@@ -61,9 +61,10 @@ module.exports = function (grunt) {
       dist: {
         dest: 'build/auth0-angular.js',
         src: [
-          'src/services/auth0.js',
+          'src/auth0.js',
           'src/services/auth0.utils.js',
-          'src/services/auth0.service.js'
+          'src/services/auth0.service.js',
+          'src/directives/ifUser.directive.js'
         ]
       }
     },
