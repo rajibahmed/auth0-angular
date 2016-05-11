@@ -367,6 +367,12 @@
             checkHandlers(options, successCallback, errorCallback);
             options = getInnerLibraryConfigField('parseOptions', libName)(options);
             var signinMethod = getInnerLibraryMethod('signin', libName);
+            var errorFn = !errorCallback ? null : function (err) {
+                callHandler('loginFailure', { error: err });
+                if (errorCallback) {
+                  errorCallback(err);
+                }
+              };
             var successFn = !successCallback ? null : function (profile, idToken, accessToken, state, refreshToken) {
                 if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
                   successCallback();
@@ -375,13 +381,7 @@
                     if (successCallback) {
                       successCallback(profile, idToken, accessToken, state, refreshToken);
                     }
-                  });
-                }
-              };
-            var errorFn = !errorCallback ? null : function (err) {
-                callHandler('loginFailure', { error: err });
-                if (errorCallback) {
-                  errorCallback(err);
+                  }, errorFn);
                 }
               };
             var signinCall = authUtils.callbackify(signinMethod, successFn, errorFn, innerAuth0libraryConfiguration[libName || config.lib].library());
