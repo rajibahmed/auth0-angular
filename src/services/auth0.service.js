@@ -127,7 +127,7 @@
                     isAuthenticated: false
                 };
 
-                $rootScope.profile = null;
+                $rootScope.isAuthenticated = null;
 
                 var getHandlers = function(anEvent) {
                     return config.eventHandlers[anEvent];
@@ -154,7 +154,7 @@
                         isAuthenticated: true
                     };
 
-                    $rootScope.profile = response;
+                    $rootScope.isAuthenticated = response;
 
                     angular.extend(auth, response);
                     callHandler(!isRefresh ? 'loginSuccess' : 'authenticated', angular.extend({
@@ -407,7 +407,7 @@
                     auth.state = null;
                     auth.accessToken = null;
                     auth.tokenPayload = null;
-                    $rootScope.profile = null;
+                    $rootScope.isAuthenticated = null;
                     callHandler('logout');
                 };
 

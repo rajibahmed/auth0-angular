@@ -15,7 +15,7 @@ describe('if user: ', function () {
     });
 
     it('should not be hidden if user', function () {
-        $rootScope.profile = {name: "chris"};
+        $rootScope.isAuthenticated = true;
         $rootScope.$digest();
         var isHidden = dElement.hasClass('ng-hide');
         expect(isHidden).to.be.false;

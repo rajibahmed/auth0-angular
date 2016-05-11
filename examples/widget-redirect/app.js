@@ -1,6 +1,5 @@
 angular.module( 'sample', [
   'auth0',
-  'auth0.directives',
   'ngRoute',
   'sample.home',
   'angular-storage',

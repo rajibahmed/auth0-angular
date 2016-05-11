@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.1.0 - 2016-05-08
+ * @version v4.1.0 - 2016-05-11
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -242,7 +242,7 @@
                     isAuthenticated: false
                 };
 
-                $rootScope.profile = null;
+                $rootScope.isAuthenticated = null;
 
                 var getHandlers = function(anEvent) {
                     return config.eventHandlers[anEvent];
@@ -269,7 +269,7 @@
                         isAuthenticated: true
                     };
 
-                    $rootScope.profile = response;
+                    $rootScope.isAuthenticated = response;
 
                     angular.extend(auth, response);
                     callHandler(!isRefresh ? 'loginSuccess' : 'authenticated', angular.extend({
@@ -522,7 +522,7 @@
                     auth.state = null;
                     auth.accessToken = null;
                     auth.tokenPayload = null;
-                    $rootScope.profile = null;
+                    $rootScope.isAuthenticated = null;
                     callHandler('logout');
                 };
 
@@ -547,12 +547,14 @@
             }];
         }]);
 
-angular.module('auth0.directives', ['auth0.service'])
+angular.module('auth0.directives', ['auth0.service']);
+
+angular.module('auth0.directives')
     .directive('ifUser', ["$rootScope", function($rootScope){
         return {
             link: function(scope, element){
-                $rootScope.$watch('profile',function(userProfile){
-                    if(userProfile){
+                $rootScope.$watch('isAuthenticated',function(isAuth){
+                    if(isAuth){
                         element.removeClass('ng-hide');
                     }else{
                         element.addClass('ng-hide');

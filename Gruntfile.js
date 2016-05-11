@@ -64,6 +64,7 @@ module.exports = function (grunt) {
           'src/auth0.js',
           'src/services/auth0.utils.js',
           'src/services/auth0.service.js',
+          'src/directives/auth0.directive.js',
           'src/directives/ifUser.directive.js'
         ]
       }
