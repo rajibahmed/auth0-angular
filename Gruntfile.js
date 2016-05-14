@@ -53,18 +53,21 @@ module.exports = function (grunt) {
         'test/{,*/}*.js'
       ]
     },
-
-    ngmin: {
-      dist: {
-        files: [ { expand: true, cwd: 'src', src: '**/*.js', dest: 'build/' } ]
-      }
-    },
-
+      
     concat: {
       options: {
         banner: '<%= meta.banner %>'
       },
-      dist: { dest: 'build/auth0-angular.js', src: ['build/auth0-angular.js'] }
+      dist: {
+        dest: 'build/auth0-angular.js',
+        src: [
+          'src/auth0.js',
+          'src/services/auth0.utils.js',
+          'src/services/auth0.service.js',
+          'src/directives/auth0.directive.js',
+          'src/directives/ifUser.directive.js'
+        ]
+      }
     },
 
     uglify: {
@@ -102,19 +105,19 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           flatten: true,
-          src: 'build/*',
+          src: 'build/auth0-angular.js',
           dest: 'release/',
           rename: renameRelease(pkg.version)
         }, {
           expand: true,
           flatten: true,
-          src: 'build/*',
+          src: 'build/auth0-angular.js',
           dest: 'release/',
           rename: renameRelease(minorVersion)
         }, {
           expand: true,
           flatten: true,
-          src: 'build/*',
+          src: 'build/auth0-angular.js',
           dest: 'release/',
           rename: renameRelease(majorVersion)
         }]
@@ -230,7 +233,7 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('build', ['clean', 'jshint', 'ngmin', 'concat', 'uglify', 'karma', 'copy']);
+  grunt.registerTask('build', ['clean', 'jshint', 'concat', 'uglify', 'karma', 'copy']);
   grunt.registerTask('test', ['build', 'karma']);
   grunt.registerTask('scenario', ['build', 'connect:scenario_custom_login', 'protractor:local']);
 
