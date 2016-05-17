@@ -245,6 +245,13 @@ If the user has not attempted a login yet, this will be `null`.
 
 This flag returns whether there's a user authenticated or not.
 
+### auth.linkAccount(token, profile, options, successCallback, errCallback)
+
+API to link multiple accounts to primary account
+
+Note that `options.connection` must be provided because it tells Auth0 which account to link to
+
+
 #### auth.id_token, auth.access_token, auth.state
 
 These properties contain the tokens returned after the user is logged in.
