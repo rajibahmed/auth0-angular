@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.1.0 - 2016-05-11
+ * @version v4.1.0 - 2016-05-16
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -203,6 +203,7 @@
                 this.loginState = options.loginState;
                 this.clientID = options.clientID || options.clientId;
                 var domain = options.domain;
+                this.domain = domain;
                 this.sso = options.sso;
 
                 var constructorInfo = constructorName(Auth0Constructor);
@@ -237,12 +238,13 @@
                 };
             });
 
-            this.$get = ["$rootScope", "$q", "$injector", "$window", "$location", "authUtils", function($rootScope, $q, $injector, $window, $location, authUtils) {
+            this.$get = ["$rootScope", "$q", "$injector", "$window", "$location", "authUtils", "$http",
+                function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
                 };
 
-                $rootScope.isAuthenticated = null;
+                $rootScope.isAuthenticated = false;
 
                 var getHandlers = function(anEvent) {
                     return config.eventHandlers[anEvent];
@@ -269,7 +271,7 @@
                         isAuthenticated: true
                     };
 
-                    $rootScope.isAuthenticated = response;
+                    $rootScope.isAuthenticated = true;
 
                     angular.extend(auth, response);
                     callHandler(!isRefresh ? 'loginSuccess' : 'authenticated', angular.extend({
@@ -396,6 +398,22 @@
                     }
                 };
 
+                var linkAccount = function(primaryJWT, secondaryJWT, profile){
+                    var user_id = profile.user_id;
+                    return $http(
+                        {
+                            method: 'POST',
+                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities',
+                            headers: {
+                                Authorization: 'Bearer ' + primaryJWT
+                            },
+                            data:{
+                                link_with: secondaryJWT
+                            }
+                        }
+                    )
+                }
+
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
                 };
@@ -493,6 +511,45 @@
 
                     signupCall(options);
                 };
+                
+                auth.linkAccount = function (primaryJWT, primaryProfile, options, successCallback, errorCallback, libName) {
+                    var defaultConfig = {popup: true};
+                    if (!primaryJWT){
+                        throw new Error('Available token is needed to link to another');
+                    }
+
+                    if (!options.connection){
+                        throw new Error('You have to define a connection to create link');
+                    }
+
+                    options = options || {};
+
+                    checkHandlers(options, successCallback, errorCallback);
+                    angular.extend(options, defaultConfig);
+                    options = getInnerLibraryConfigField('parseOptions', libName)(options);
+
+                    var signinMethod = getInnerLibraryMethod('signin', libName);
+
+                    var successFn = function(profile, idToken) {
+                       linkAccount(primaryJWT, idToken, primaryProfile).then(function(response){
+
+                           successCallback(response);
+
+                       });
+                    };
+
+                    var errorFn = function(err) {
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+
+                    var linkAccountCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
+
+                    linkAccountCall(options);
+
+                };
 
                 auth.reset = function(options, successCallback, errorCallback) {
                     options = options || {};
@@ -522,7 +579,7 @@
                     auth.state = null;
                     auth.accessToken = null;
                     auth.tokenPayload = null;
-                    $rootScope.isAuthenticated = null;
+                    $rootScope.isAuthenticated = false;
                     callHandler('logout');
                 };
 
