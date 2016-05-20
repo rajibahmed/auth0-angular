@@ -20,7 +20,7 @@ console.log($rootScope.profile);
         alert(response.data);
       }
     });
-  }
+  };
 
   $scope.logout = function() {
     auth.signout();
