@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.1.0 - 2016-05-18
+ * @version v4.1.0 - 2016-05-26
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -299,8 +299,8 @@
 
                     var hashResult = config.auth0lib.parseHash($window.location.hash);
                     if (!auth.isAuthenticated) {
-                        if (hashResult && hashResult.id_token) {
-                            onSigninOk(hashResult.id_token, hashResult.access_token, hashResult.state, hashResult.refresh_token);
+                        if (hashResult && (hashResult.idToken || hashResult.id_token)) {
+                            onSigninOk(hashResult.idToken || hashResult.id_token, hashResult.accessToken || hashResult.access_token, hashResult.state, hashResult.refreshToken || hashResult.refresh_token);
                             return;
                         }
                     }
