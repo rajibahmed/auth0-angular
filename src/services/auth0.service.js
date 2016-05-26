@@ -299,6 +299,18 @@
                     )
                 }
 
+                var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
+                    return $http(
+                        {
+                            method: 'DELETE',
+                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities/' + secondaryProvider + '/' + secondaryUserId,
+                            headers: {
+                                Authorization: 'Bearer ' + primaryJWT
+                            }
+                        }
+                    )
+                }
+
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
                 };
@@ -399,12 +411,12 @@
                 
                 auth.linkAccount = function (primaryJWT, primaryProfile, options, successCallback, errorCallback, libName) {
                     var defaultConfig = {popup: true};
-                    if (!primaryJWT){
-                        throw new Error('Available token is needed to link to another');
+                    if (!primaryJWT || !primaryProfile){
+                        throw new Error('Available token and profile is needed to link to another');
                     }
 
-                    if (!options.connection){
-                        throw new Error('You have to define a connection to create link');
+                    if(!options.connection){
+                        throw new Error('Connection type (eg: facebook, github) is required to link account');
                     }
 
                     options = options || {};
@@ -420,6 +432,8 @@
 
                            successCallback(response);
 
+                       }, function(err) {
+                               errorCallback(err);
                        });
                     };
 
@@ -433,6 +447,15 @@
                     var linkAccountCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
 
                     linkAccountCall(options);
+
+                };
+
+                auth.unLinkAccount = function (primaryJWT, user_id, secondaryProvider, secondaryUserId) {
+                    if (!primaryJWT || !user_id || !secondaryProvider || !secondaryUserId){
+                        throw new Error('All the arguments are required to unlink. Please refer to documentation for the arguments');
+                    }
+
+                    return unLinkAccount(primaryJWT,  user_id, secondaryProvider, secondaryUserId);
 
                 };
 
