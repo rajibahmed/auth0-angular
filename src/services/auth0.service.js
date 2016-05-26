@@ -184,8 +184,8 @@
 
                     var hashResult = config.auth0lib.parseHash($window.location.hash);
                     if (!auth.isAuthenticated) {
-                        if (hashResult && hashResult.id_token) {
-                            onSigninOk(hashResult.id_token, hashResult.access_token, hashResult.state, hashResult.refresh_token);
+                        if (hashResult && (hashResult.idToken || hashResult.id_token)) {
+                            onSigninOk(hashResult.idToken || hashResult.id_token, hashResult.accessToken || hashResult.access_token, hashResult.state, hashResult.refreshToken || hashResult.refresh_token);
                             return;
                         }
                     }
