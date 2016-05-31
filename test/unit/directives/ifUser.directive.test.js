@@ -6,7 +6,7 @@ describe('if user: ', function () {
         inject(function (_$rootScope_, _$compile_) {
             $rootScope = _$rootScope_;
             $compile = _$compile_;
-        })
+        });
         
 
         dElement = angular.element('<div if-user>HI</div>');
