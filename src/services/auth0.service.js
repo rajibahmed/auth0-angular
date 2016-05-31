@@ -330,7 +330,7 @@
                             }
                         }
                     )
-                }
+                };
 
                 var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
                     return $http(
@@ -342,7 +342,7 @@
                             }
                         }
                     )
-                }
+                };
 
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
