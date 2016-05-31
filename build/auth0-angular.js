@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.1.0 - 2016-05-29
+ * @version v4.2.0 - 2016-05-31
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -209,17 +209,43 @@
                 }
             };
 
+            /*
+             *
+             * DESCRIPTION: Get a method from the libraries
+             * 
+             * INPUT: method name (string), library name (string)
+             * OUTPUT: String
+             *
+             * */
+
             function getInnerLibraryMethod(name, libName) {
                 libName = libName || config.lib;
                 var library = innerAuth0libraryConfiguration[libName].library();
                 return library[innerAuth0libraryConfiguration[libName][name]];
             }
 
+            /*
+             *
+             * DESCRIPTION: Get a config from the libraries
+             * 
+             * INPUT: config name (string), library name (string)
+             * OUTPUT: String
+             *
+             * */
             function getInnerLibraryConfigField(name, libName) {
                 libName = libName || config.lib;
                 return innerAuth0libraryConfiguration[libName][name];
             }
 
+            /*
+             *
+             * DESCRIPTION: Returns a constructor: Defaults to a function if provided. 
+             * Defaults to a Lock if library is included and function is not provided
+             * 
+             * INPUT: function
+             * OUTPUT: object
+             *
+             * */
             function constructorName(fun) {
                 if (fun) {
                     return {
@@ -252,6 +278,13 @@
                 /* jshint ignore:end */
             }
 
+            /*
+             *
+             * DESCRIPTION: Configures provider with provided options
+             * 
+             * INPUT: option (object) and constructor
+             *
+             * */
             this.init = function(options, Auth0Constructor) {
                 if (!options) {
                     throw new Error('You must set options when calling init');
@@ -489,6 +522,14 @@
 
                 auth.init = angular.bind(config, config.init);
 
+
+                /*
+                 *
+                 * DESCRIPTION: Fetch a delegation token
+                 * INPUT: Config object
+                 * OUTPUT: Promise
+                 *
+                 * */
                 auth.getToken = function(options) {
                     options = options || { scope: 'openid' };
 
@@ -501,6 +542,13 @@
                     return getDelegationTokenAsync(options);
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Refresh Token
+                 * INPUT: token (string)
+                 * OUTPUT: Promise
+                 *
+                 * */
                 auth.refreshIdToken = function(refresh_token) {
                     var refreshTokenAsync = authUtils.promisify(config.auth0js.refreshToken, config.auth0js);
 
@@ -513,6 +561,13 @@
                     return auth.refreshTokenPromise;
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Renew user's token
+                 * INPUT: token (string)
+                 * OUTPUT: Promise
+                 *
+                 * */
                 auth.renewIdToken = function(id_token) {
                     var renewIdTokenAsync = authUtils.promisify(config.auth0js.renewIdToken, config.auth0js);
 
@@ -521,6 +576,13 @@
                     });
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Sign a user in
+                 * INPUT: config options, success callback fxn, err callback fxn, library name
+                 * The Library name is either 'Auth0' or 'Auth0Lock'
+                 *
+                 * */
                 auth.signin = function(options, successCallback, errorCallback, libName) {
                     options = options || {};
                     checkHandlers(options, successCallback, errorCallback);
@@ -551,6 +613,13 @@
                     signinCall(options);
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Sign's up a user
+                 * INPUT: config options, success callback fxn, err callback fxn
+                 *
+                 * */
+
                 auth.signup = function(options, successCallback, errorCallback) {
                     options = options || {};
                     checkHandlers(options, successCallback, errorCallback);
@@ -580,7 +649,17 @@
 
                     signupCall(options);
                 };
-                
+
+                /*
+                 *
+                 * DESCRIPTION: Link multiple accounts (e.g: FB, Twitter, Google)
+                 * 
+                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
+                 * primaryProfile (object): Primary account user profile,
+                 * options (object): Auth options
+                 * Success Callback fxn, Err Callback fxn and Library Name
+                 *
+                 * */
                 auth.linkAccount = function (primaryJWT, primaryProfile, options, successCallback, errorCallback, libName) {
                     var defaultConfig = {popup: true};
                     if (!primaryJWT || !primaryProfile){
@@ -622,6 +701,18 @@
 
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Unlink linked accounts
+                 * 
+                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
+                 * user_id (string): Primary account user id,
+                 * secondaryProvider (string): Provider of account to unlink (eg: Facebook),
+                 * secondaryUserId: Secondary account user id
+                 * 
+                 * OUTPUT: Promise
+                 *
+                 * */
                 auth.unLinkAccount = function (primaryJWT, user_id, secondaryProvider, secondaryUserId) {
                     if (!primaryJWT || !user_id || !secondaryProvider || !secondaryUserId){
                         throw new Error('All the arguments are required to unlink. Please refer to documentation for the arguments');
@@ -630,6 +721,15 @@
                     return unLinkAccount(primaryJWT,  user_id, secondaryProvider, secondaryUserId);
 
                 };
+
+                /*
+                 *
+                 * DESCRIPTION: Performs forgot your password flow
+                 * 
+                 * INPUT: config options (object), Callbacks
+                 *
+                 *
+                 * */
 
                 auth.reset = function(options, successCallback, errorCallback) {
                     options = options || {};
@@ -651,6 +751,12 @@
                     validateUserCall(options);
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Sign user out
+                 *
+                 *
+                 * */
                 auth.signout = function() {
                     auth.isAuthenticated = false;
                     auth.profile = null;
@@ -667,6 +773,14 @@
                     return onSigninOk(idToken, accessToken, state, refreshToken, profile, true);
                 };
 
+                /*
+                 *
+                 * DESCRIPTION: Fetch user profile
+                 *
+                 * INPUT: token (string)
+                 * OUTPUT: Promise
+                 *
+                 * */
                 auth.getProfile = function(idToken) {
                     var getProfilePromisify = authUtils.promisify(config.auth0lib.getProfile, config.auth0lib);
                     auth.profilePromise = getProfilePromisify(idToken || auth.idToken);
