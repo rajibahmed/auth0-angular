@@ -175,16 +175,23 @@
                     });
                 };
 
+
                 // SignIn
 
-                var onSigninOk = function(profile, isRefresh) {
-                    var profilePromise = auth.getProfile(profile.idToken);
+                var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
+
+                    idToken = idToken || profile.idToken;
+                    accessToken = accessToken || profile.accessToken;
+                    state = state || profile.state;
+                    refreshToken = refreshToken || profile.refreshToken;
+
+                    var profilePromise = auth.getProfile(idToken);
 
                     var response = {
-                        idToken: profile.idToken,
-                        accessToken: profile.accessToken,
-                        state: profile.state,
-                        refreshToken: profile.refreshToken,
+                        idToken: idToken,
+                        accessToken: accessToken,
+                        state: state,
+                        refreshToken: refreshToken,
                         profile: profile,
                         isAuthenticated: true
                     };
@@ -420,13 +427,19 @@
                     options = getInnerLibraryConfigField('parseOptions', libName)(options);
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
-                    var successFn = !successCallback ? null : function(profile) {
-                        if (!profile.idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
+                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+
+                        idToken = idToken || profile.idToken;
+                        accessToken = accessToken || profile.accessToken;
+                        state = state || profile.state;
+                        refreshToken = refreshToken || profile.refreshToken;
+
+                        if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
                             successCallback();
                         } else {
-                            onSigninOk(profile).then(function(profile) {
+                            onSigninOk(idToken, accessToken, state, refreshToken, profile).then(function(profile) {
                                 if (successCallback) {
-                                    successCallback(profile);
+                                    successCallback(profile, idToken, accessToken, state, refreshToken);
                                 }
                             });
                         }
@@ -456,13 +469,13 @@
                     checkHandlers(options, successCallback, errorCallback);
                     options = getInnerLibraryConfigField('parseOptions')(options);
 
-                    var successFn = !successCallback ? null : function(profile) {
+                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
                         if (!angular.isUndefined(options.auto_login) && !options.auto_login) {
                             successCallback();
                         } else {
-                            onSigninOk(profile).then(function(profile) {
+                            onSigninOk(idToken, accessToken, state, refreshToken, profile).then(function(profile) {
                                 if (successCallback) {
-                                    successCallback(profile);
+                                    successCallback(profile, idToken, accessToken, state, refreshToken);
                                 }
                             });
                         }
