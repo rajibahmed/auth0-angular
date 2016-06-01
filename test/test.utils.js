@@ -1,3 +1,4 @@
+/*exported initAuth0 */
 function executeInConfigBlock(cb, includes) {
   var fakeModule = angular.module('fakeModule', []);
   var modulesToInclude = (includes ? includes : ['auth0']).concat('fakeModule');

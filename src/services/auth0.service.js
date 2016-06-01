@@ -1,6 +1,6 @@
 
     angular.module('auth0.service', ['auth0.utils'])
-        .provider('auth', ["authUtilsProvider", function(authUtilsProvider) {
+        .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -156,7 +156,7 @@
                 };
             });
 
-            this.$get = ["$rootScope", "$q", "$injector", "$window", "$location", "authUtils", "$http",
+            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
                 function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
@@ -257,6 +257,7 @@
                         if (!config.initialized) {
                             return;
                         }
+                        
 
                         verifyRoute(
                             (to.data && to.data.requiresLogin),
@@ -275,6 +276,8 @@
                         );
                     });
                 }
+
+                    /*jshint latedef: nofunc */
 
                 function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
                     if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
@@ -329,8 +332,8 @@
                                 link_with: secondaryJWT
                             }
                         }
-                    )
-                }
+                    );
+                };
 
                 var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
                     return $http(
@@ -341,8 +344,8 @@
                                 Authorization: 'Bearer ' + primaryJWT
                             }
                         }
-                    )
-                }
+                    );
+                };
 
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
