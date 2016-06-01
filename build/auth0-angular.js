@@ -350,14 +350,14 @@
 
                 // SignIn
 
-                var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
-                    var profilePromise = auth.getProfile(idToken);
+                var onSigninOk = function(profile, isRefresh) {
+                    var profilePromise = auth.getProfile(profile.idToken);
 
                     var response = {
-                        idToken: idToken,
-                        accessToken: accessToken,
-                        state: state,
-                        refreshToken: refreshToken,
+                        idToken: profile.idToken,
+                        accessToken: profile.accessToken,
+                        state: profile.state,
+                        refreshToken: profile.refreshToken,
                         profile: profile,
                         isAuthenticated: true
                     };
@@ -593,13 +593,13 @@
                     options = getInnerLibraryConfigField('parseOptions', libName)(options);
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
-                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
-                        if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
+                    var successFn = !successCallback ? null : function(profile) {
+                        if (!profile.idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
                             successCallback();
                         } else {
-                            onSigninOk(idToken, accessToken, state, refreshToken, profile).then(function(profile) {
+                            onSigninOk(profile).then(function(profile) {
                                 if (successCallback) {
-                                    successCallback(profile, idToken, accessToken, state, refreshToken);
+                                    successCallback(profile);
                                 }
                             });
                         }
@@ -629,13 +629,13 @@
                     checkHandlers(options, successCallback, errorCallback);
                     options = getInnerLibraryConfigField('parseOptions')(options);
 
-                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+                    var successFn = !successCallback ? null : function(profile) {
                         if (!angular.isUndefined(options.auto_login) && !options.auto_login) {
                             successCallback();
                         } else {
-                            onSigninOk(idToken, accessToken, state, refreshToken, profile).then(function(profile) {
+                            onSigninOk(profile).then(function(profile) {
                                 if (successCallback) {
-                                    successCallback(profile, idToken, accessToken, state, refreshToken);
+                                    successCallback(profile);
                                 }
                             });
                         }
