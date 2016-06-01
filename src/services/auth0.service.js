@@ -1,6 +1,6 @@
 
     angular.module('auth0.service', ['auth0.utils'])
-        .provider('auth', ["authUtilsProvider", function(authUtilsProvider) {
+        .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -156,7 +156,7 @@
                 };
             });
 
-            this.$get = ["$rootScope", "$q", "$injector", "$window", "$location", "authUtils", "$http",
+            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
                 function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
@@ -175,9 +175,16 @@
                     });
                 };
 
+
                 // SignIn
 
                 var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
+
+                    idToken = idToken || profile.idToken;
+                    accessToken = accessToken || profile.accessToken;
+                    state = state || profile.state;
+                    refreshToken = refreshToken || profile.refreshToken;
+
                     var profilePromise = auth.getProfile(idToken);
 
                     var response = {
@@ -257,6 +264,7 @@
                         if (!config.initialized) {
                             return;
                         }
+                        
 
                         verifyRoute(
                             (to.data && to.data.requiresLogin),
@@ -275,6 +283,8 @@
                         );
                     });
                 }
+
+                    /*jshint latedef: nofunc */
 
                 function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
                     if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
@@ -329,7 +339,7 @@
                                 link_with: secondaryJWT
                             }
                         }
-                    )
+                    );
                 };
 
                 var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
@@ -341,7 +351,7 @@
                                 Authorization: 'Bearer ' + primaryJWT
                             }
                         }
-                    )
+                    );
                 };
 
                 auth.hookEvents = function() {
@@ -418,6 +428,12 @@
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
                     var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+
+                        idToken = idToken || profile.idToken;
+                        accessToken = accessToken || profile.accessToken;
+                        state = state || profile.state;
+                        refreshToken = refreshToken || profile.refreshToken;
+
                         if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
                             successCallback();
                         } else {

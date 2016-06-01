@@ -1,13 +1,13 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.2.0 - 2016-05-31
+ * @version v4.2.1 - 2016-06-01
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
     angular.module('auth0', ['auth0.service', 'auth0.utils', 'auth0.directives'])
-        .run(["auth", function(auth) {
+        .run(['auth', function(auth) {
             auth.hookEvents();
         }]);
 
@@ -22,6 +22,7 @@
  * 5. Convert callbacks to promises
  *
  * */
+
     angular.module('auth0.utils', [])
         .provider('authUtils', function() {
             var Utils = {
@@ -53,7 +54,7 @@
 
             angular.extend(this, Utils);
 
-            this.$get = ["$rootScope", "$q", function($rootScope, $q) {
+            this.$get = ['$rootScope', '$q', function($rootScope, $q) {
                 var authUtils = {};
                 angular.extend(authUtils, Utils);
 
@@ -172,7 +173,7 @@
 
 
     angular.module('auth0.service', ['auth0.utils'])
-        .provider('auth', ["authUtilsProvider", function(authUtilsProvider) {
+        .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -328,7 +329,7 @@
                 };
             });
 
-            this.$get = ["$rootScope", "$q", "$injector", "$window", "$location", "authUtils", "$http",
+            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
                 function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
@@ -347,9 +348,16 @@
                     });
                 };
 
+
                 // SignIn
 
                 var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
+
+                    idToken = idToken || profile.idToken;
+                    accessToken = accessToken || profile.accessToken;
+                    state = state || profile.state;
+                    refreshToken = refreshToken || profile.refreshToken;
+
                     var profilePromise = auth.getProfile(idToken);
 
                     var response = {
@@ -429,6 +437,7 @@
                         if (!config.initialized) {
                             return;
                         }
+                        
 
                         verifyRoute(
                             (to.data && to.data.requiresLogin),
@@ -447,6 +456,8 @@
                         );
                     });
                 }
+
+                    /*jshint latedef: nofunc */
 
                 function verifyRoute(requiresLogin, e, getState, redirectToLogin) {
                     if (!auth.isAuthenticated && !auth.refreshTokenPromise) {
@@ -501,8 +512,8 @@
                                 link_with: secondaryJWT
                             }
                         }
-                    )
-                }
+                    );
+                };
 
                 var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
                     return $http(
@@ -513,8 +524,8 @@
                                 Authorization: 'Bearer ' + primaryJWT
                             }
                         }
-                    )
-                }
+                    );
+                };
 
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
@@ -590,6 +601,12 @@
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
                     var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+
+                        idToken = idToken || profile.idToken;
+                        accessToken = accessToken || profile.accessToken;
+                        state = state || profile.state;
+                        refreshToken = refreshToken || profile.refreshToken;
+
                         if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
                             successCallback();
                         } else {
@@ -801,7 +818,7 @@
 angular.module('auth0.directives', ['auth0.service']);
 
 angular.module('auth0.directives')
-    .directive('ifUser', ["$rootScope", function($rootScope){
+    .directive('ifUser', ['$rootScope', function($rootScope){
         return {
             link: function(scope, element){
                 $rootScope.$watch('isAuthenticated',function(isAuth){

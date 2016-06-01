@@ -1,6 +1,6 @@
 
 angular.module('auth0.directives')
-    .directive('ifUser', ["$rootScope", function($rootScope){
+    .directive('ifUser', ['$rootScope', function($rootScope){
         return {
             link: function(scope, element){
                 $rootScope.$watch('isAuthenticated',function(isAuth){

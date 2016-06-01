@@ -8,6 +8,7 @@
  * 5. Convert callbacks to promises
  *
  * */
+
     angular.module('auth0.utils', [])
         .provider('authUtils', function() {
             var Utils = {
@@ -39,7 +40,7 @@
 
             angular.extend(this, Utils);
 
-            this.$get = ["$rootScope", "$q", function($rootScope, $q) {
+            this.$get = ['$rootScope', '$q', function($rootScope, $q) {
                 var authUtils = {};
                 angular.extend(authUtils, Utils);
 
