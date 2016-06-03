@@ -26,7 +26,7 @@ angular.module( 'sample', [
     clientID: AUTH0_CLIENT_ID,
     loginUrl: '/login'
   });
-  
+
   authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
     console.log("Login Success");
     profilePromise.then(function(profile) {
@@ -47,7 +47,7 @@ angular.module( 'sample', [
 
   jwtInterceptorProvider.tokenGetter = function(store) {
     return store.get('token');
-  }
+  };
 
   // Add a simple interceptor that will fetch all requests and add the jwt token to its authorization header.
   // NOTE: in case you are calling APIs which expect a token signed with a different secret, you might
@@ -55,7 +55,7 @@ angular.module( 'sample', [
   $httpProvider.interceptors.push('jwtInterceptor');
 }).run(function($rootScope, auth, store, jwtHelper, $location) {
   $rootScope.$on('$locationChangeStart', function() {
-  
+
     var token = store.get('token');
     if (token) {
       if (!jwtHelper.isTokenExpired(token)) {
@@ -77,4 +77,3 @@ angular.module( 'sample', [
     }
   });
 });
-

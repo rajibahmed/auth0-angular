@@ -22,13 +22,11 @@ var api = new Auth0({
 
 var CONNECTION = 'Username-Password-Authentication';
 
-app.configure(function () {
-  app.use(express.bodyParser());
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-  });
+app.use(express.bodyParser());
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
 app.use(express.bodyParser());
@@ -47,7 +45,7 @@ app.post('/custom-signup', function (req, res) {
     }
 
     res.send(200);
-    return;
+    
   });
 });
 

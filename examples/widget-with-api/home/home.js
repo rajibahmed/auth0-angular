@@ -20,7 +20,7 @@ angular.module( 'sample.home', [
         alert(response.data);
       }
     });
-  }
+  };
 
   $scope.logout = function() {
     auth.signout();

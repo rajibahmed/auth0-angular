@@ -46,7 +46,7 @@ Then, in your controller:
 ```js
 $scope.linkGoogle = function () {
   auth.signin({
-    connection: 'google-oauth2'
+    connection: 'google-oauth2',
     authParams: {
       access_token: auth.accessToken
     }
@@ -56,10 +56,11 @@ $scope.linkGoogle = function () {
   }, function () {
     // TODO Handle error
   }, 'Auth0');
+};
 
 $scope.linkTwitter = function () {
   auth.signin({
-    connection: 'twitter'
+    connection: 'twitter',
     authParams: {
       access_token: auth.accessToken
     }
@@ -69,6 +70,7 @@ $scope.linkTwitter = function () {
   }, function () {
     // TODO Handle error
   }, 'Auth0');
+};
 ```
 
 ## Advanced Configuration

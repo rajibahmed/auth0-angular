@@ -1,10 +1,10 @@
 angular.module( 'sample.home', [
 'auth0'
 ])
-.controller( 'HomeCtrl', function HomeController( $scope, auth, $http, $location, store ) {
+.controller( 'HomeCtrl', function HomeController( $scope, auth, $http, $location, store, $rootScope ) {
 
   $scope.auth = auth;
-
+console.log($rootScope.profile);
   $scope.callApi = function() {
     // Just call the API as you'd do using $http
     $http({
@@ -20,7 +20,7 @@ angular.module( 'sample.home', [
         alert(response.data);
       }
     });
-  }
+  };
 
   $scope.logout = function() {
     auth.signout();

@@ -1,3 +1,3 @@
-var AUTH0_CLIENT_ID='BUIJSW9x60sIHBw8Kd9EmCbj8eDIFxDC';
-var AUTH0_CALLBACK_URL=location.href;
-var AUTH0_DOMAIN='samples.auth0.com';
+var AUTH0_CLIENT_ID='G7IwfyxcX3O5dHU2ikjdOXDpa7HAtjyr';
+var AUTH0_CALLBACK_URL='http://127.0.0.1:8080/';
+var AUTH0_DOMAIN='chris92.auth0.com';
