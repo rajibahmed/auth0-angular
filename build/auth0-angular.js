@@ -600,12 +600,14 @@
                     options = getInnerLibraryConfigField('parseOptions', libName)(options);
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
+                    
                     var errorFn = !errorCallback ? null : function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
                         }
                     };
+                    
                     var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
 
                         idToken = idToken || profile.idToken;
@@ -623,6 +625,7 @@
                             }, errorFn);
                         }
                     };
+                    
                     var signinCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
 
                     signinCall(options);
