@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.2.1 - 2016-06-01
+ * @version v4.2.1 - 2016-06-06
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -600,14 +600,6 @@
                     options = getInnerLibraryConfigField('parseOptions', libName)(options);
 
                     var signinMethod = getInnerLibraryMethod('signin', libName);
-                    
-                    var errorFn = !errorCallback ? null : function(err) {
-                        callHandler('loginFailure', { error: err });
-                        if (errorCallback) {
-                            errorCallback(err);
-                        }
-                    };
-                    
                     var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
 
                         idToken = idToken || profile.idToken;
@@ -622,10 +614,17 @@
                                 if (successCallback) {
                                     successCallback(profile, idToken, accessToken, state, refreshToken);
                                 }
-                            }, errorFn);
+                            });
                         }
                     };
-                    
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
                     var signinCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
 
                     signinCall(options);
