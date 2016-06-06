@@ -120,7 +120,9 @@
                     throw new Error('You must set options when calling init');
                 }
                 this.loginUrl = options.loginUrl;
+                this.loginUrlParams = options.loginUrlParams;
                 this.loginState = options.loginState;
+                this.loginStateParams = options.loginStateParams;
                 this.clientID = options.clientID || options.clientId;
                 var domain = options.domain;
                 this.domain = domain;
@@ -210,9 +212,9 @@
 
                 function forbidden() {
                     if (config.loginUrl) {
-                        $location.path(config.loginUrl);
+                        $location.path(config.loginUrl, config.loginUrlParams);
                     } else if (config.loginState) {
-                        $injector.get('$state').go(config.loginState);
+                        $injector.get('$state').go(config.loginState, config.loginStateParams);
                     } else {
                         callHandler('forbidden');
                     }
@@ -254,7 +256,7 @@
                                 });
                             },
                             function(){
-                                $location.path(config.loginUrl);
+                                $location.path(config.loginUrl, config.loginUrlParams);
                             }
                         );
                     });
@@ -280,7 +282,7 @@
                                 });
                             },
                             function() {
-                                $injector.get('$state').go(config.loginState);
+                                 $injector.get('$state').go(config.loginState, config.loginStateParams);
                             }
                         );
                     });
