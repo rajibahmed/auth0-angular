@@ -34,6 +34,24 @@ describe('Auth0 Angular', function () {
         });
     });
 
+    describe('authenticate', function() {
+        var auth, $rootScope, $timeout;
+
+        beforeEach(initAuth0);
+        beforeEach(inject(function (_auth_, _$rootScope_, _$timeout_) {
+            auth = _auth_;
+            $rootScope = _$rootScope_;
+            $timeout = _$timeout_;
+        }));
+
+        it('isAuthenticated must be true after authenticate', function () {
+            expect(auth.isAuthenticated).to.be.equal(false);
+            auth.authenticate('id-token');
+            expect(auth.isAuthenticated).to.be.equal(true);
+            $timeout.flush();
+        });
+    });
+
     describe('auth.profile and getProfile', function () {
         var auth, $rootScope, $timeout;
 
@@ -74,6 +92,24 @@ describe('Auth0 Angular', function () {
                 })
                 .then(done);
             $timeout.flush();
+        });
+    });
+
+    describe('link accounts', function() {
+        var auth, $rootScope, $timeout;
+        beforeEach(initAuth0);
+
+        beforeEach(inject(function (_auth_, _$rootScope_, _$timeout_) {
+            auth = _auth_;
+            $rootScope = _$rootScope_;
+            $timeout = _$timeout_;
+        }));
+
+        it('link', function() {
+            auth.linkAccount('token', {}, {connection:'facebook'},
+                function() {
+                expect.to.be.ok;
+            });
         });
     });
 
