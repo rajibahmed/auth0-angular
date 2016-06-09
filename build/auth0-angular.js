@@ -182,6 +182,7 @@
             var innerAuth0libraryConfiguration = {
                 'Auth0': {
                     signin: 'login',
+                    signinOnly: 'signinOnly',
                     signup: 'signup',
                     reset: 'changePassword',
                     validateUser: 'validateUser',
@@ -199,6 +200,7 @@
                 },
                 'Auth0Lock': {
                     signin: 'show',
+                    signinOnly: 'showSignin',
                     signup: 'showSignup',
                     reset: 'showReset',
                     library: function() {
@@ -213,7 +215,7 @@
             /*
              *
              * DESCRIPTION: Get a method from the libraries
-             * 
+             *
              * INPUT: method name (string), library name (string)
              * OUTPUT: String
              *
@@ -228,7 +230,7 @@
             /*
              *
              * DESCRIPTION: Get a config from the libraries
-             * 
+             *
              * INPUT: config name (string), library name (string)
              * OUTPUT: String
              *
@@ -240,9 +242,9 @@
 
             /*
              *
-             * DESCRIPTION: Returns a constructor: Defaults to a function if provided. 
+             * DESCRIPTION: Returns a constructor: Defaults to a function if provided.
              * Defaults to a Lock if library is included and function is not provided
-             * 
+             *
              * INPUT: function
              * OUTPUT: object
              *
@@ -282,7 +284,7 @@
             /*
              *
              * DESCRIPTION: Configures provider with provided options
-             * 
+             *
              * INPUT: option (object) and constructor
              *
              * */
@@ -291,7 +293,9 @@
                     throw new Error('You must set options when calling init');
                 }
                 this.loginUrl = options.loginUrl;
+                this.loginUrlParams = options.loginUrlParams;
                 this.loginState = options.loginState;
+                this.loginStateParams = options.loginStateParams;
                 this.clientID = options.clientID || options.clientId;
                 var domain = options.domain;
                 this.domain = domain;
@@ -381,9 +385,9 @@
 
                 function forbidden() {
                     if (config.loginUrl) {
-                        $location.path(config.loginUrl);
+                        $location.path(config.loginUrl, config.loginUrlParams);
                     } else if (config.loginState) {
-                        $injector.get('$state').go(config.loginState);
+                        $injector.get('$state').go(config.loginState, config.loginStateParams);
                     } else {
                         callHandler('forbidden');
                     }
@@ -425,7 +429,7 @@
                                 });
                             },
                             function(){
-                                $location.path(config.loginUrl);
+                                $location.path(config.loginUrl, config.loginUrlParams);
                             }
                         );
                     });
@@ -437,7 +441,7 @@
                         if (!config.initialized) {
                             return;
                         }
-                        
+
 
                         verifyRoute(
                             (to.data && to.data.requiresLogin),
@@ -451,7 +455,7 @@
                                 });
                             },
                             function() {
-                                $injector.get('$state').go(config.loginState);
+                                 $injector.get('$state').go(config.loginState, config.loginStateParams);
                             }
                         );
                     });
@@ -630,6 +634,36 @@
                     signinCall(options);
                 };
 
+                auth.signinOnly = function(options, successCallback, errorCallback, libName) {
+                    options = options || {};
+                    checkHandlers(options, successCallback, errorCallback);
+                    options = getInnerLibraryConfigField('parseOptions', libName)(options);
+
+                    var signinMethod = getInnerLibraryMethod('signinOnly', libName);
+                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+                      if (!idToken && !angular.isUndefined(options.loginAfterSignup) && !options.loginAfterSignup) {
+                        successCallback();
+                      } else {
+                        onSigninOk(idToken, accessToken, state, refreshToken, profile).then(function(profile) {
+                          if (successCallback) {
+                            successCallback(profile, idToken, accessToken, state, refreshToken);
+                          }
+                        });
+                      }
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                      callHandler('loginFailure', { error: err });
+                      if (errorCallback) {
+                        errorCallback(err);
+                      }
+                    };
+
+                    var signinCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
+
+                    signinCall(options);
+                };
+
                 /*
                  *
                  * DESCRIPTION: Sign's up a user
@@ -670,7 +704,7 @@
                 /*
                  *
                  * DESCRIPTION: Link multiple accounts (e.g: FB, Twitter, Google)
-                 * 
+                 *
                  * INPUT: primaryJWT (string): Initial JWT assigned to User,
                  * primaryProfile (object): Primary account user profile,
                  * options (object): Auth options
@@ -721,12 +755,12 @@
                 /*
                  *
                  * DESCRIPTION: Unlink linked accounts
-                 * 
+                 *
                  * INPUT: primaryJWT (string): Initial JWT assigned to User,
                  * user_id (string): Primary account user id,
                  * secondaryProvider (string): Provider of account to unlink (eg: Facebook),
                  * secondaryUserId: Secondary account user id
-                 * 
+                 *
                  * OUTPUT: Promise
                  *
                  * */
@@ -742,7 +776,7 @@
                 /*
                  *
                  * DESCRIPTION: Performs forgot your password flow
-                 * 
+                 *
                  * INPUT: config options (object), Callbacks
                  *
                  *
@@ -814,6 +848,7 @@
                 return auth;
             }];
         }]);
+
 
 angular.module('auth0.directives', ['auth0.service']);
 
