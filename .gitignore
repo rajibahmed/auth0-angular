@@ -1,7 +1,6 @@
 node_modules
 bower_components
 
-release
 
 # Ignore Java and IntelliJ IDEA stuff
 .idea
