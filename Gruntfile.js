@@ -53,7 +53,7 @@ module.exports = function (grunt) {
         'test/{,*/}*.js'
       ]
     },
-      
+
     concat: {
       options: {
         banner: '<%= meta.banner %>'
@@ -118,6 +118,24 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.js',
+          dest: 'release/',
+          rename: renameRelease(majorVersion)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.min.js',
+          dest: 'release/',
+          rename: renameRelease(pkg.version)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.min.js',
+          dest: 'release/',
+          rename: renameRelease(minorVersion)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.min.js',
           dest: 'release/',
           rename: renameRelease(majorVersion)
         }]
