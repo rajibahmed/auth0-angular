@@ -184,10 +184,10 @@
 
                 var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
 
-                    idToken = idToken || profile.idToken;
-                    accessToken = accessToken || profile.accessToken;
-                    state = state || profile.state;
-                    refreshToken = refreshToken || profile.refreshToken;
+                  idToken = idToken || (profile ? profile.idToken : null);
+                  accessToken = accessToken || (profile ? profile.accessToken : null);
+                  state = state || (profile ? profile.state : null);
+                  refreshToken = refreshToken || (profile ? profile.refreshToken : null);
 
                     var profilePromise = auth.getProfile(idToken);
 
