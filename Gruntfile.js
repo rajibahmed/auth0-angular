@@ -157,8 +157,19 @@ module.exports = function (grunt) {
           dest: 'release/',
           rename: renameRelease(vNext)
         }]
+      },
+      release_vNext: {
+        files: [{
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.js',
+          dest: 'release/',
+          rename: renameRelease(vNext)
+        }]
       }
     },
+
+
 
     connect: {
       scenario_custom_login: {
@@ -284,11 +295,16 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('build', ['ngAnnotate', 'clean', 'jshint', 'concat', 'uglify', 'karma', 'copy']);
+  grunt.registerTask('build_vNext', ['ngAnnotate', 'clean', 'jshint', 'concat', 'uglify', 'karma', 'copy:release_vNext']);
+
   grunt.registerTask('test', ['build', 'karma']);
   grunt.registerTask('scenario', ['build', 'connect:scenario_custom_login', 'protractor:local']);
 
   grunt.registerTask('purge_cdn',     ['http:purge_js', 'http:purge_js_min', 'http:purge_major_js', 'http:purge_major_js_min', 'http:purge_minor_js', 'http:purge_minor_js_min', 'http:purge_next', 'http:purge_next_min']);
+  grunt.registerTask('purge_vNext',     ['http:purge_next', 'http:purge_next_min']);
   grunt.registerTask('cdn', ['build', 'aws_s3', 'purge_cdn']);
+  grunt.registerTask('cdn_vNext', ['build_vNext', 'aws_s3', 'purge_vNext']);
+
 
   grunt.registerTask('default', ['build', 'watch']);
 
