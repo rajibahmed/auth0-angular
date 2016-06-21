@@ -1,6 +1,7 @@
 
     angular.module('auth0.service', ['auth0.utils'])
         .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
+            'ngInject';
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -132,7 +133,9 @@
                 this.lib = constructorInfo.lib;
                 if (constructorInfo.lib === 'Auth0Lock') {
                     this.auth0lib = new constructorInfo.constructor(this.clientID, domain, angular.extend(defaultOptions, options));
-                    this.auth0js = this.auth0lib.getClient();
+                    if(this.auth0lib.getClient) {
+                        this.auth0js = this.auth0lib.getClient();
+                    }
                     this.isLock = true;
                 } else {
                     this.auth0lib = new constructorInfo.constructor(angular.extend(defaultOptions, options));
@@ -153,15 +156,18 @@
                 this.eventHandlers[anEvent].push(handler);
             };
 
+
             var events = ['loginSuccess', 'loginFailure', 'logout', 'forbidden', 'authenticated'];
+            // var lockEvents = ['show', 'hide'];
+
             angular.forEach(events, function(anEvent) {
                 config['add' + authUtilsProvider.capitalize(anEvent) + 'Handler'] = function(handler) {
                     config.on(anEvent, handler);
                 };
             });
 
-            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
-                function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
+            this.$get =
+                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http', function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
                 };
@@ -330,8 +336,7 @@
                     }
                 };
 
-                var linkAccount = function(primaryJWT, secondaryJWT, profile){
-                    var user_id = profile.user_id;
+                var linkAccount = function(primaryJWT, secondaryJWT, user_id){
                     return $http(
                         {
                             method: 'POST',
@@ -362,8 +367,22 @@
                     // Does nothing. Hook events on application's run
                 };
 
+
                 auth.init = angular.bind(config, config.init);
 
+                auth.lockOn = function (event, handler) {
+                    var lockEvents = ['show', 'hide', 'error', 'authenticated', 'authorization_error'];
+                    if(config.lib === 'Auth0Lock') {
+                        if(lockEvents.indexOf(event) !== -1) {
+                            var lib = innerAuth0libraryConfiguration[config.lib].library();
+                            lib.on(event, handler);
+                        } else {
+                            throw new Error ('Event \'' + event + '\' does not exist in Lock');
+                        }
+                    } else {
+                        throw new Error ('Only applicable when using Lock: https://github.com/auth0/lock');
+                    }
+                };
 
                 /*
                  *

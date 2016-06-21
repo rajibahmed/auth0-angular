@@ -11,6 +11,7 @@ describe('Auth0 Angular', function () {
                 });
             });
 
+            
             inject(function (auth) { expect(auth).to.be.ok; });
         });
 

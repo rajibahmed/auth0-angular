@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.2.2 - 2016-06-09
+ * @version v4.2.2 - 2016-06-21
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -8,6 +8,7 @@
 
     angular.module('auth0', ['auth0.service', 'auth0.utils', 'auth0.directives'])
         .run(['auth', function(auth) {
+            'ngInject';
             auth.hookEvents();
         }]);
 
@@ -25,6 +26,7 @@
 
     angular.module('auth0.utils', [])
         .provider('authUtils', function() {
+            'ngInject';
             var Utils = {
                 /*
                 *
@@ -174,6 +176,7 @@
 
     angular.module('auth0.service', ['auth0.utils'])
         .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
+            'ngInject';
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -305,7 +308,9 @@
                 this.lib = constructorInfo.lib;
                 if (constructorInfo.lib === 'Auth0Lock') {
                     this.auth0lib = new constructorInfo.constructor(this.clientID, domain, angular.extend(defaultOptions, options));
-                    this.auth0js = this.auth0lib.getClient();
+                    if(this.auth0lib.getClient) {
+                        this.auth0js = this.auth0lib.getClient();
+                    }
                     this.isLock = true;
                 } else {
                     this.auth0lib = new constructorInfo.constructor(angular.extend(defaultOptions, options));
@@ -326,15 +331,18 @@
                 this.eventHandlers[anEvent].push(handler);
             };
 
+
             var events = ['loginSuccess', 'loginFailure', 'logout', 'forbidden', 'authenticated'];
+            // var lockEvents = ['show', 'hide'];
+
             angular.forEach(events, function(anEvent) {
                 config['add' + authUtilsProvider.capitalize(anEvent) + 'Handler'] = function(handler) {
                     config.on(anEvent, handler);
                 };
             });
 
-            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
-                function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
+            this.$get =
+                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http', function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
                 };
@@ -357,10 +365,10 @@
 
                 var onSigninOk = function(idToken, accessToken, state, refreshToken, profile, isRefresh) {
 
-                    idToken = idToken || profile.idToken;
-                    accessToken = accessToken || profile.accessToken;
-                    state = state || profile.state;
-                    refreshToken = refreshToken || profile.refreshToken;
+                  idToken = idToken || (profile ? profile.idToken : null);
+                  accessToken = accessToken || (profile ? profile.accessToken : null);
+                  state = state || (profile ? profile.state : null);
+                  refreshToken = refreshToken || (profile ? profile.refreshToken : null);
 
                     var profilePromise = auth.getProfile(idToken);
 
@@ -503,8 +511,7 @@
                     }
                 };
 
-                var linkAccount = function(primaryJWT, secondaryJWT, profile){
-                    var user_id = profile.user_id;
+                var linkAccount = function(primaryJWT, secondaryJWT, user_id){
                     return $http(
                         {
                             method: 'POST',
@@ -535,8 +542,22 @@
                     // Does nothing. Hook events on application's run
                 };
 
+
                 auth.init = angular.bind(config, config.init);
 
+                auth.lockOn = function (event, handler) {
+                    var lockEvents = ['show', 'hide', 'error', 'authenticated', 'authorization_error'];
+                    if(config.lib === 'Auth0Lock') {
+                        if(lockEvents.indexOf(event) !== -1) {
+                            var lib = innerAuth0libraryConfiguration[config.lib].library();
+                            lib.on(event, handler);
+                        } else {
+                            throw new Error ('Event \'' + event + '\' does not exist in Lock');
+                        }
+                    } else {
+                        throw new Error ('Only applicable when using Lock: https://github.com/auth0/lock');
+                    }
+                };
 
                 /*
                  *
@@ -854,6 +875,7 @@ angular.module('auth0.directives', ['auth0.service']);
 
 angular.module('auth0.directives')
     .directive('ifUser', ['$rootScope', function($rootScope){
+        'ngInject';
         return {
             link: function(scope, element){
                 $rootScope.$watch('isAuthenticated',function(isAuth){
