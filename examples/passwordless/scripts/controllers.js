@@ -15,7 +15,19 @@ myApp.controller('MenuCtrl', function ($scope, $location, auth, store) {
   };
 
   $scope.login = function () {
-    auth.signin();
+    // auth.magicLink(function(email) {
+    //
+    //   console.log(email);
+    //
+    // });
+    auth.sms(function (profile, token) {
+      console.log(profile, token);
+    });
+    // auth.emailCode(function(profile, id_token) {
+    //
+    //     console.log(id_token);
+    //
+    // });
   };
 });
 

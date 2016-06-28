@@ -29,7 +29,7 @@
                 'Auth0Lock': {
                     signin: 'show',
                     signinOnly: 'showSignin',
-                    signup: 'showSignup',
+                    signup: 'signup',
                     reset: 'showReset',
                     library: function() {
                         return config.auth0lib;
@@ -86,6 +86,13 @@
                 }
 
                 /* jshint ignore:start */
+                if (null != window.Auth0LockPasswordless) {
+                    return {
+                        lib: 'Auth0LockPasswordless',
+                        constructor: window.Auth0LockPasswordless
+                    };
+                }
+                
                 if (null != window.Auth0Lock) {
                     return {
                         lib: 'Auth0Lock',
@@ -99,6 +106,7 @@
                         constructor: window.Auth0
                     };
                 }
+
 
                 if (typeof Auth0Widget !== 'undefined') {
                     throw new Error('Auth0Widget is not supported with this version of auth0-angular' +
@@ -129,9 +137,13 @@
                 this.domain = domain;
                 this.sso = options.sso;
 
+               
                 var constructorInfo = constructorName(Auth0Constructor);
                 this.lib = constructorInfo.lib;
-                if (constructorInfo.lib === 'Auth0Lock') {
+
+                if (constructorInfo.lib === 'Auth0LockPasswordless') {
+                    this.auth0lib = new constructorInfo.constructor(this.clientID, domain);
+                } else if (constructorInfo.lib === 'Auth0Lock') {
                     this.auth0lib = new constructorInfo.constructor(this.clientID, domain, angular.extend(defaultOptions, options));
                     if(this.auth0lib.getClient) {
                         this.auth0js = this.auth0lib.getClient();
@@ -142,6 +154,7 @@
                     this.auth0js = this.auth0lib;
                     this.isLock = false;
                 }
+
 
                 this.initialized = true;
             };
@@ -330,7 +343,7 @@
 
                 var checkHandlers = function(options, successCallback) {
                     var successHandlers = getHandlers('loginSuccess');
-                    if (!successCallback && !options.username && !options.email && (!successHandlers || successHandlers.length === 0)) {
+                    if (!successCallback && !options.username && !options.email && (!successHandlers || successHandlers.length === 0) && config.lib !== 'Auth0Lock') {
                         throw new Error('You must define a loginSuccess handler ' +
                             'if not using popup mode or not doing ro call because that means you are doing a redirect');
                     }
@@ -380,7 +393,7 @@
                             throw new Error ('Event \'' + event + '\' does not exist in Lock');
                         }
                     } else {
-                        throw new Error ('Only applicable when using Lock: https://github.com/auth0/lock');
+                        throw new Error ('Lock events are only applicable when using Lock: https://github.com/auth0/lock');
                     }
                 };
 
@@ -541,10 +554,70 @@
                         }
                     };
 
-                    var auth0lib = config.auth0lib;
-                    var signupCall = authUtils.callbackify(getInnerLibraryMethod('signup'),successFn , errorFn, auth0lib);
+                    // var auth0lib = config.auth0lib;
+                    var signupCall = authUtils.callbackify(getInnerLibraryMethod('signup'),successFn , errorFn, innerAuth0libraryConfiguration[config.lib].library());
+
 
                     signupCall(options);
+                };
+
+                auth.magicLink = function (successCallback, errorCallback) {
+                    var successFn = !successCallback ? null : function(email) {
+
+                        successCallback(email);
+
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+                    var magicLinkCall = authUtils.callbackify(config.auth0lib.magiclink, successFn , errorFn, config.auth0lib);
+
+                    magicLinkCall();
+                };
+
+                auth.emailCode = function (successCallback, errorCallback) {
+
+                    var successFn = !successCallback ? null : function(profile, id_token, access_token, state, refresh_token) {
+
+                        successCallback(profile, id_token, access_token, state, refresh_token);
+
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+                    var emailCodeCall = authUtils.callbackify(config.auth0lib.emailcode, successFn , errorFn, config.auth0lib);
+
+                    emailCodeCall();
+                };
+
+                auth.sms = function (successCallback, errorCallback) {
+
+                    var successFn = !successCallback ? null : function(profile, idToken) {
+
+                      successCallback(profile, idToken);
+
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+                    var smsCall = authUtils.callbackify(config.auth0lib.sms,successFn , errorFn, config.auth0lib);
+
+                    smsCall();
                 };
 
                 /*
