@@ -111,6 +111,7 @@ module.exports = function (grunt) {
           'examples/html5mode/public/auth0-angular.js':                   'build/auth0-angular.js',
           'examples/widget/scripts/auth0-angular.js':                     'build/auth0-angular.js',
           'examples/widget-10/scripts/auth0-angular.js':                     'build/auth0-angular.js',
+          'examples/passwordless/scripts/auth0-angular.js':                     'build/auth0-angular.js',
           'examples/sso/scripts/auth0-angular.js':                        'build/auth0-angular.js',
           'examples/widget-redirect/scripts/auth0-angular.js':            'build/auth0-angular.js',
           'examples/redirect/scripts/auth0-angular.js':            'build/auth0-angular.js',
