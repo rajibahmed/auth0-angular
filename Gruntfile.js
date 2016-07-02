@@ -130,9 +130,33 @@ module.exports = function (grunt) {
         }, {
           expand: true,
           flatten: true,
+          src: 'build/auth0-angular.js',
+          dest: 'release/',
+          rename: renameRelease(minorVersion)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.js',
+          dest: 'release/',
+          rename: renameRelease(majorVersion)
+        }, {
+          expand: true,
+          flatten: true,
           src: 'build/auth0-angular.min.js',
           dest: 'release/',
           rename: renameRelease(pkg.version)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.min.js',
+          dest: 'release/',
+          rename: renameRelease(minorVersion)
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'build/auth0-angular.js',
+          dest: 'release/',
+          rename: renameRelease(vNext)
         }]
       },
       release_vNext: {
@@ -140,12 +164,6 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.js',
-          dest: 'release/',
-          rename: renameRelease(vNext)
-        }, {
-          expand: true,
-          flatten: true,
-          src: 'build/auth0-angular.min.js',
           dest: 'release/',
           rename: renameRelease(vNext)
         }]
@@ -203,10 +221,15 @@ module.exports = function (grunt) {
       },
       clean: {
         files: [
-          { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + '/auth0-angular.js' },
-          { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + '/auth0-angular.min.js' },
-          { action: 'delete', dest: 'w2/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.js' },
-          { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.min.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + pkg.version + '.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + pkg.version + '.min.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + pkg.version + '.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + pkg.version + '.min.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + majorVersion + vNext + '.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + majorVersion + vNext + '.min.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + minorVersion + '.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + minorVersion + '.min.js' },
+          { action: 'delete', dest: 'w2/auth0-angular-' + minorVersion + '.min.js' }
         ]
       },
       publish: {
@@ -215,7 +238,7 @@ module.exports = function (grunt) {
             expand: true,
             cwd:    'release/',
             src:    ['*'],
-            dest:   'w2/auth0-angular/' + pkg.version + '/'
+            dest:   'w2/auth0-angular/'
           }
         ]
       },
@@ -223,25 +246,49 @@ module.exports = function (grunt) {
     http: {
       purge_js: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/auth0-angular/' + pkg.version + '/auth0-angular.js',
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + pkg.version + '.js',
           method: 'DELETE'
         }
       },
       purge_js_min: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/auth0-angular/' + pkg.version + '/auth0-angular.min.js',
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + pkg.version + '.min.js',
+          method: 'DELETE'
+        }
+      },
+      purge_major_js: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + majorVersion + '.js',
+          method: 'DELETE'
+        }
+      },
+      purge_major_js_min: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + majorVersion + '.min.js',
+          method: 'DELETE'
+        }
+      },
+      purge_minor_js: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + minorVersion + '.js',
+          method: 'DELETE'
+        }
+      },
+      purge_minor_js_min: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + minorVersion + '.min.js',
           method: 'DELETE'
         }
       },
       purge_next: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.js',
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + pkg.version + vNext + '.js',
           method: 'DELETE'
         }
       },
       purge_next_min: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.min.js',
+          url: process.env.CDN_ROOT + '/w2/auth0-angular-' + pkg.version + vNext + '.min.js',
           method: 'DELETE'
         }
       }
