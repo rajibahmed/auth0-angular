@@ -207,8 +207,8 @@ module.exports = function (grunt) {
         files: [
           { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + '/auth0-angular.js' },
           { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + '/auth0-angular.min.js' },
-          { action: 'delete', dest: 'w2/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.js' },
-          { action: 'delete', dest: 'w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.min.js' },
+          { action: 'delete', dest: 'w2/w2/auth0-angular/' + vNext + '/auth0-angular.js' },
+          { action: 'delete', dest: 'w2/auth0-angular/' +  vNext + '/auth0-angular.min.js' },
         ]
       },
       publish: {
