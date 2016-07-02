@@ -142,13 +142,13 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.js',
-          dest: 'release/' + pkg.version + '/'
+          dest: 'release/' + vNext + '/'
           // rename: renameRelease(vNext)
         }, {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.min.js',
-          dest: 'release/' + pkg.version + '/'
+          dest: 'release/' + vNext + '/'
           // rename: renameRelease(vNext)
         }]
       }
