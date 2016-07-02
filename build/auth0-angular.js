@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v5.0.0 - 2016-06-27
+ * @version v5.0.0 - 2016-07-02
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -805,10 +805,10 @@
                  * Success Callback fxn, Err Callback fxn and Library Name
                  *
                  * */
-                auth.linkAccount = function (primaryJWT, primaryProfile, options, successCallback, errorCallback, libName) {
+                auth.linkAccount = function (primaryJWT, user_id, options, successCallback, errorCallback, libName) {
                     var defaultConfig = {popup: true};
-                    if (!primaryJWT || !primaryProfile){
-                        throw new Error('Available token and profile is needed to link to another');
+                    if (!primaryJWT || !user_id){
+                        throw new Error('Available token and user id is needed to link to another');
                     }
 
                     if(!options.connection){
@@ -824,7 +824,7 @@
                     var signinMethod = getInnerLibraryMethod('signin', libName);
 
                     var successFn = function(profile, idToken) {
-                       linkAccount(primaryJWT, idToken, primaryProfile).then(function(response){
+                       linkAccount(primaryJWT, idToken, user_id).then(function(response){
 
                            successCallback(response);
 
