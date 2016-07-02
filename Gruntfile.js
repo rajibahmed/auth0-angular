@@ -237,13 +237,13 @@ module.exports = function (grunt) {
       },
       purge_next: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.js',
+          url: process.env.CDN_ROOT + '/w2/w2/auth0-angular/' + vNext + '/auth0-angular.js',
           method: 'DELETE'
         }
       },
       purge_next_min: {
         options: {
-          url: process.env.CDN_ROOT + '/w2/auth0-angular/' + pkg.version + vNext + '/auth0-angular.min.js',
+          url: process.env.CDN_ROOT + '/w2/auth0-angular/' + vNext + '/auth0-angular.min.js',
           method: 'DELETE'
         }
       }
