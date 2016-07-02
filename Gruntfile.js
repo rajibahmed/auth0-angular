@@ -1,5 +1,6 @@
 var pkg = require('./package');
 
+// Semver
 // var minorVersion = pkg.version.replace(/\.(\d)*$/, '');
 // var majorVersion = pkg.version.replace(/\.(\d)*\.(\d)*$/, '');
 var vNext = pkg.version + '.rc.1';
