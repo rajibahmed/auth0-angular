@@ -1,6 +1,7 @@
 
 angular.module('auth0.directives')
     .directive('ifUser', ['$rootScope', function($rootScope){
+        'ngInject';
         return {
             link: function(scope, element){
                 $rootScope.$watch('isAuthenticated',function(isAuth){

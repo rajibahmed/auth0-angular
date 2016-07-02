@@ -1,6 +1,7 @@
 
     angular.module('auth0.service', ['auth0.utils'])
         .provider('auth', ['authUtilsProvider', function(authUtilsProvider) {
+            'ngInject';
             var defaultOptions = {
                 callbackOnLocationHash: true
             };
@@ -28,7 +29,7 @@
                 'Auth0Lock': {
                     signin: 'show',
                     signinOnly: 'showSignin',
-                    signup: 'showSignup',
+                    signup: 'signup',
                     reset: 'showReset',
                     library: function() {
                         return config.auth0lib;
@@ -85,6 +86,13 @@
                 }
 
                 /* jshint ignore:start */
+                if (null != window.Auth0LockPasswordless) {
+                    return {
+                        lib: 'Auth0LockPasswordless',
+                        constructor: window.Auth0LockPasswordless
+                    };
+                }
+                
                 if (null != window.Auth0Lock) {
                     return {
                         lib: 'Auth0Lock',
@@ -98,6 +106,7 @@
                         constructor: window.Auth0
                     };
                 }
+
 
                 if (typeof Auth0Widget !== 'undefined') {
                     throw new Error('Auth0Widget is not supported with this version of auth0-angular' +
@@ -128,17 +137,24 @@
                 this.domain = domain;
                 this.sso = options.sso;
 
+               
                 var constructorInfo = constructorName(Auth0Constructor);
                 this.lib = constructorInfo.lib;
-                if (constructorInfo.lib === 'Auth0Lock') {
+
+                if (constructorInfo.lib === 'Auth0LockPasswordless') {
+                    this.auth0lib = new constructorInfo.constructor(this.clientID, domain);
+                } else if (constructorInfo.lib === 'Auth0Lock') {
                     this.auth0lib = new constructorInfo.constructor(this.clientID, domain, angular.extend(defaultOptions, options));
-                    this.auth0js = this.auth0lib.getClient();
+                    if(this.auth0lib.getClient) {
+                        this.auth0js = this.auth0lib.getClient();
+                    }
                     this.isLock = true;
                 } else {
                     this.auth0lib = new constructorInfo.constructor(angular.extend(defaultOptions, options));
                     this.auth0js = this.auth0lib;
                     this.isLock = false;
                 }
+
 
                 this.initialized = true;
             };
@@ -153,15 +169,18 @@
                 this.eventHandlers[anEvent].push(handler);
             };
 
+
             var events = ['loginSuccess', 'loginFailure', 'logout', 'forbidden', 'authenticated'];
+            // var lockEvents = ['show', 'hide'];
+
             angular.forEach(events, function(anEvent) {
                 config['add' + authUtilsProvider.capitalize(anEvent) + 'Handler'] = function(handler) {
                     config.on(anEvent, handler);
                 };
             });
 
-            this.$get = ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http',
-                function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
+            this.$get =
+                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http', function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
                 var auth = {
                     isAuthenticated: false
                 };
@@ -324,46 +343,33 @@
 
                 var checkHandlers = function(options, successCallback) {
                     var successHandlers = getHandlers('loginSuccess');
-                    if (!successCallback && !options.username && !options.email && (!successHandlers || successHandlers.length === 0)) {
+                    if (!successCallback && !options.username && !options.email && (!successHandlers || successHandlers.length === 0) && config.lib !== 'Auth0Lock') {
                         throw new Error('You must define a loginSuccess handler ' +
                             'if not using popup mode or not doing ro call because that means you are doing a redirect');
                     }
                 };
 
-                var linkAccount = function(primaryJWT, secondaryJWT, profile){
-                    var user_id = profile.user_id;
-                    return $http(
-                        {
-                            method: 'POST',
-                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities',
-                            headers: {
-                                Authorization: 'Bearer ' + primaryJWT
-                            },
-                            data:{
-                                link_with: secondaryJWT
-                            }
-                        }
-                    );
-                };
-
-                var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
-                    return $http(
-                        {
-                            method: 'DELETE',
-                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities/' + secondaryProvider + '/' + secondaryUserId,
-                            headers: {
-                                Authorization: 'Bearer ' + primaryJWT
-                            }
-                        }
-                    );
-                };
 
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
                 };
 
+
                 auth.init = angular.bind(config, config.init);
 
+                auth.lockOn = function (event, handler) {
+                    var lockEvents = ['show', 'hide', 'error', 'authenticated', 'authorization_error'];
+                    if(config.lib === 'Auth0Lock') {
+                        if(lockEvents.indexOf(event) !== -1) {
+                            var lib = innerAuth0libraryConfiguration[config.lib].library();
+                            lib.on(event, handler);
+                        } else {
+                            throw new Error ('Event \'' + event + '\' does not exist in Lock');
+                        }
+                    } else {
+                        throw new Error ('Lock events are only applicable when using Lock: https://github.com/auth0/lock');
+                    }
+                };
 
                 /*
                  *
@@ -522,82 +528,70 @@
                         }
                     };
 
-                    var auth0lib = config.auth0lib;
-                    var signupCall = authUtils.callbackify(getInnerLibraryMethod('signup'),successFn , errorFn, auth0lib);
+                    // var auth0lib = config.auth0lib;
+                    var signupCall = authUtils.callbackify(getInnerLibraryMethod('signup'),successFn , errorFn, innerAuth0libraryConfiguration[config.lib].library());
+
 
                     signupCall(options);
                 };
 
-                /*
-                 *
-                 * DESCRIPTION: Link multiple accounts (e.g: FB, Twitter, Google)
-                 *
-                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
-                 * primaryProfile (object): Primary account user profile,
-                 * options (object): Auth options
-                 * Success Callback fxn, Err Callback fxn and Library Name
-                 *
-                 * */
-                auth.linkAccount = function (primaryJWT, primaryProfile, options, successCallback, errorCallback, libName) {
-                    var defaultConfig = {popup: true};
-                    if (!primaryJWT || !primaryProfile){
-                        throw new Error('Available token and profile is needed to link to another');
-                    }
+                auth.magicLink = function (successCallback, errorCallback) {
+                    var successFn = !successCallback ? null : function(email) {
 
-                    if(!options.connection){
-                        throw new Error('Connection type (eg: facebook, github) is required to link account');
-                    }
+                        successCallback(email);
 
-                    options = options || {};
-
-                    checkHandlers(options, successCallback, errorCallback);
-                    angular.extend(options, defaultConfig);
-                    options = getInnerLibraryConfigField('parseOptions', libName)(options);
-
-                    var signinMethod = getInnerLibraryMethod('signin', libName);
-
-                    var successFn = function(profile, idToken) {
-                       linkAccount(primaryJWT, idToken, primaryProfile).then(function(response){
-
-                           successCallback(response);
-
-                       }, function(err) {
-                               errorCallback(err);
-                       });
                     };
 
-                    var errorFn = function(err) {
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
                         }
                     };
 
+                    var magicLinkCall = authUtils.callbackify(config.auth0lib.magiclink, successFn , errorFn, config.auth0lib);
 
-                    var linkAccountCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
-
-                    linkAccountCall(options);
-
+                    magicLinkCall();
                 };
 
-                /*
-                 *
-                 * DESCRIPTION: Unlink linked accounts
-                 *
-                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
-                 * user_id (string): Primary account user id,
-                 * secondaryProvider (string): Provider of account to unlink (eg: Facebook),
-                 * secondaryUserId: Secondary account user id
-                 *
-                 * OUTPUT: Promise
-                 *
-                 * */
-                auth.unLinkAccount = function (primaryJWT, user_id, secondaryProvider, secondaryUserId) {
-                    if (!primaryJWT || !user_id || !secondaryProvider || !secondaryUserId){
-                        throw new Error('All the arguments are required to unlink. Please refer to documentation for the arguments');
-                    }
+                auth.emailCode = function (successCallback, errorCallback) {
 
-                    return unLinkAccount(primaryJWT,  user_id, secondaryProvider, secondaryUserId);
+                    var successFn = !successCallback ? null : function(profile, id_token, access_token, state, refresh_token) {
 
+                        successCallback(profile, id_token, access_token, state, refresh_token);
+
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+                    var emailCodeCall = authUtils.callbackify(config.auth0lib.emailcode, successFn , errorFn, config.auth0lib);
+
+                    emailCodeCall();
+                };
+
+                auth.sms = function (successCallback, errorCallback) {
+
+                    var successFn = !successCallback ? null : function(profile, idToken) {
+
+                      successCallback(profile, idToken);
+
+                    };
+
+                    var errorFn = !errorCallback ? null : function(err) {
+                        callHandler('loginFailure', { error: err });
+                        if (errorCallback) {
+                            errorCallback(err);
+                        }
+                    };
+
+                    var smsCall = authUtils.callbackify(config.auth0lib.sms,successFn , errorFn, config.auth0lib);
+
+                    smsCall();
                 };
 
                 /*
