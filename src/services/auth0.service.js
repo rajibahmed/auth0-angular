@@ -180,7 +180,7 @@
             });
 
             this.$get =
-                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http', function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
+                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', function($rootScope, $q, $injector, $window, $location, authUtils) {
                 var auth = {
                     isAuthenticated: false
                 };
