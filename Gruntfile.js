@@ -1,8 +1,9 @@
 var pkg = require('./package');
 
-var minorVersion = pkg.version.replace(/\.(\d)*$/, '');
-var majorVersion = pkg.version.replace(/\.(\d)*\.(\d)*$/, '');
-var vNext = majorVersion + '.rc.1';
+// var minorVersion = pkg.version.replace(/\.(\d)*$/, '');
+// var majorVersion = pkg.version.replace(/\.(\d)*\.(\d)*$/, '');
+var vNext = pkg.version + '.rc.1';
+
 
 var path = require('path');
 
