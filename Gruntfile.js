@@ -6,14 +6,14 @@ var pkg = require('./package');
 var vNext = pkg.version + '.rc.1';
 
 
-var path = require('path');
+// var path = require('path');
 
-function  renameRelease (v) {
-  return function (d, f) {
-    var dest = path.join(d, f.replace(/(\.min)?\.js$/, '-'+ v + '$1.js'));
-    return dest;
-  };
-}
+// function  renameRelease (v) {
+//   return function (d, f) {
+//     var dest = path.join(d, f.replace(/(\.min)?\.js$/, '-'+ v + '$1.js'));
+//     return dest;
+//   };
+// }
 
 module.exports = function (grunt) {
 
@@ -127,14 +127,14 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.js',
-          dest: 'release/',
-          rename: renameRelease(pkg.version)
+          dest: 'release/' + pkg.version + '/'
+          // rename: renameRelease(pkg.version)
         }, {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.min.js',
-          dest: 'release/',
-          rename: renameRelease(pkg.version)
+          dest: 'release/' + pkg.version + '/'
+          // rename: renameRelease(pkg.version)
         }]
       },
       release_vNext: {
@@ -142,14 +142,14 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.js',
-          dest: 'release/',
-          rename: renameRelease(vNext)
+          dest: 'release/' + pkg.version + '/'
+          // rename: renameRelease(vNext)
         }, {
           expand: true,
           flatten: true,
           src: 'build/auth0-angular.min.js',
-          dest: 'release/',
-          rename: renameRelease(vNext)
+          dest: 'release/' + pkg.version + '/'
+          // rename: renameRelease(vNext)
         }]
       }
     },
