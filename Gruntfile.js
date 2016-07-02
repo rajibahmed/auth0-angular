@@ -215,7 +215,7 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd:    'release/',
+            cwd:    'release/' + pkg.version + '/',
             src:    ['*'],
             dest:   'w2/auth0-angular/' + pkg.version + '/'
           }
