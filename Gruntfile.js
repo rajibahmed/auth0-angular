@@ -218,6 +218,11 @@ module.exports = function (grunt) {
             cwd:    'release/' + pkg.version + '/',
             src:    ['*'],
             dest:   'w2/auth0-angular/' + pkg.version + '/'
+          }, {
+            expand: true,
+            cwd:    'release/' + vNext + '/',
+            src:    ['*'],
+            dest:   'w2/auth0-angular/' + vNext + '/'
           }
         ]
       },
