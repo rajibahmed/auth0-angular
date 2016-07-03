@@ -455,7 +455,7 @@
                         }
                     };
 
-                    var errorFn = !errorCallback ? null : function(err) {
+                    var errorFn = function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
@@ -485,7 +485,7 @@
                       }
                     };
 
-                    var errorFn = !errorCallback ? null : function(err) {
+                    var errorFn =  function(err) {
                       callHandler('loginFailure', { error: err });
                       if (errorCallback) {
                         errorCallback(err);
@@ -509,7 +509,7 @@
                     checkHandlers(options, successCallback, errorCallback);
                     options = getInnerLibraryConfigField('parseOptions')(options);
 
-                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+                    var successFn = function(profile, idToken, accessToken, state, refreshToken) {
                         if (!angular.isUndefined(options.auto_login) && !options.auto_login) {
                             successCallback();
                         } else {
