@@ -431,7 +431,7 @@
                  * The Library name is either 'Auth0' or 'Auth0Lock'
                  *
                  * */
-                    
+
                 auth.signin = function(options, successCallback, errorCallback, libName) {
                     options = options || {};
                     checkHandlers(options, successCallback, errorCallback);
@@ -522,7 +522,7 @@
                         }
                     };
 
-                    var errorFn = !errorCallback ? null : function(err) {
+                    var errorFn =  function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
