@@ -431,6 +431,7 @@
                  * The Library name is either 'Auth0' or 'Auth0Lock'
                  *
                  * */
+                    
                 auth.signin = function(options, successCallback, errorCallback, libName) {
                     options = options || {};
                     checkHandlers(options, successCallback, errorCallback);
