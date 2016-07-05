@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v5.0.0 - 2016-07-02
+ * @version v5.0.0 - 2016-07-03
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -355,7 +355,7 @@
             });
 
             this.$get =
-                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', '$http', function($rootScope, $q, $injector, $window, $location, authUtils, $http) {
+                ['$rootScope', '$q', '$injector', '$window', '$location', 'authUtils', function($rootScope, $q, $injector, $window, $location, authUtils) {
                 var auth = {
                     isAuthenticated: false
                 };
@@ -524,32 +524,6 @@
                     }
                 };
 
-                var linkAccount = function(primaryJWT, secondaryJWT, user_id){
-                    return $http(
-                        {
-                            method: 'POST',
-                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities',
-                            headers: {
-                                Authorization: 'Bearer ' + primaryJWT
-                            },
-                            data:{
-                                link_with: secondaryJWT
-                            }
-                        }
-                    );
-                };
-
-                var unLinkAccount = function(primaryJWT, user_id, secondaryProvider, secondaryUserId){
-                    return $http(
-                        {
-                            method: 'DELETE',
-                            url: 'https://' + config.domain + '/api/v2/users/' + user_id + '/identities/' + secondaryProvider + '/' + secondaryUserId,
-                            headers: {
-                                Authorization: 'Bearer ' + primaryJWT
-                            }
-                        }
-                    );
-                };
 
                 auth.hookEvents = function() {
                     // Does nothing. Hook events on application's run
@@ -656,7 +630,7 @@
                         }
                     };
 
-                    var errorFn = !errorCallback ? null : function(err) {
+                    var errorFn = function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
@@ -686,7 +660,7 @@
                       }
                     };
 
-                    var errorFn = !errorCallback ? null : function(err) {
+                    var errorFn =  function(err) {
                       callHandler('loginFailure', { error: err });
                       if (errorCallback) {
                         errorCallback(err);
@@ -710,7 +684,7 @@
                     checkHandlers(options, successCallback, errorCallback);
                     options = getInnerLibraryConfigField('parseOptions')(options);
 
-                    var successFn = !successCallback ? null : function(profile, idToken, accessToken, state, refreshToken) {
+                    var successFn = function(profile, idToken, accessToken, state, refreshToken) {
                         if (!angular.isUndefined(options.auto_login) && !options.auto_login) {
                             successCallback();
                         } else {
@@ -793,78 +767,6 @@
                     var smsCall = authUtils.callbackify(config.auth0lib.sms,successFn , errorFn, config.auth0lib);
 
                     smsCall();
-                };
-
-                /*
-                 *
-                 * DESCRIPTION: Link multiple accounts (e.g: FB, Twitter, Google)
-                 *
-                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
-                 * primaryProfile (object): Primary account user profile,
-                 * options (object): Auth options
-                 * Success Callback fxn, Err Callback fxn and Library Name
-                 *
-                 * */
-                auth.linkAccount = function (primaryJWT, user_id, options, successCallback, errorCallback, libName) {
-                    var defaultConfig = {popup: true};
-                    if (!primaryJWT || !user_id){
-                        throw new Error('Available token and user id is needed to link to another');
-                    }
-
-                    if(!options.connection){
-                        throw new Error('Connection type (eg: facebook, github) is required to link account');
-                    }
-
-                    options = options || {};
-
-                    checkHandlers(options, successCallback, errorCallback);
-                    angular.extend(options, defaultConfig);
-                    options = getInnerLibraryConfigField('parseOptions', libName)(options);
-
-                    var signinMethod = getInnerLibraryMethod('signin', libName);
-
-                    var successFn = function(profile, idToken) {
-                       linkAccount(primaryJWT, idToken, user_id).then(function(response){
-
-                           successCallback(response);
-
-                       }, function(err) {
-                               errorCallback(err);
-                       });
-                    };
-
-                    var errorFn = function(err) {
-                        if (errorCallback) {
-                            errorCallback(err);
-                        }
-                    };
-
-
-                    var linkAccountCall = authUtils.callbackify(signinMethod, successFn, errorFn , innerAuth0libraryConfiguration[libName || config.lib].library());
-
-                    linkAccountCall(options);
-
-                };
-
-                /*
-                 *
-                 * DESCRIPTION: Unlink linked accounts
-                 *
-                 * INPUT: primaryJWT (string): Initial JWT assigned to User,
-                 * user_id (string): Primary account user id,
-                 * secondaryProvider (string): Provider of account to unlink (eg: Facebook),
-                 * secondaryUserId: Secondary account user id
-                 *
-                 * OUTPUT: Promise
-                 *
-                 * */
-                auth.unLinkAccount = function (primaryJWT, user_id, secondaryProvider, secondaryUserId) {
-                    if (!primaryJWT || !user_id || !secondaryProvider || !secondaryUserId){
-                        throw new Error('All the arguments are required to unlink. Please refer to documentation for the arguments');
-                    }
-
-                    return unLinkAccount(primaryJWT,  user_id, secondaryProvider, secondaryUserId);
-
                 };
 
                 /*
