@@ -3,8 +3,8 @@
   "main": "build/auth0-angular.js",
   "dependencies": {
     "angular": "*",
-    "auth0-lock": ">= 6.3.0",
-    "auth0.js": ">= 5.2.2"
+    "auth0-lock": ">= 10.0.0-rc.1",
+    "auth0.js": ">= 7.0.3"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.5",
