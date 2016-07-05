@@ -1,3 +1,7 @@
+#5.0.0
+* `auth.lockOn()` added to handle Lock specific events
+* Passwordless support for Lock
+
 
 # 4.0.X
 
