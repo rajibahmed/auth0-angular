@@ -11,7 +11,6 @@
 
     angular.module('auth0.utils', [])
         .provider('authUtils', function() {
-            'ngInject';
             var Utils = {
                 /*
                 *

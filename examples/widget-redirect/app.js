@@ -1,5 +1,11 @@
-var app = angular.module('sample', ['auth0', 'angular-storage', 'angular-jwt', 'ngRoute', 'sample.home']);
-app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, $locationProvider,
+angular.module( 'sample', [
+  'auth0',
+  'ngRoute',
+  'sample.home',
+  'angular-storage',
+  'angular-jwt'
+])
+.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, $locationProvider,
   jwtInterceptorProvider) {
   $routeProvider
     .when( '/', {
@@ -16,12 +22,11 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
 
 
   authProvider.init({
-    domain: 'AUTH0_DOMAIN',
-    clientID: 'AUTH0_CLIENT_ID',
+    domain: AUTH0_DOMAIN,
+    clientID: AUTH0_CLIENT_ID,
     loginUrl: '/login'
   });
 
-  //Called when login is successful
   authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
     console.log("Login Success");
     profilePromise.then(function(profile) {
@@ -48,19 +53,13 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
   // NOTE: in case you are calling APIs which expect a token signed with a different secret, you might
   // want to check the delegation-token example
   $httpProvider.interceptors.push('jwtInterceptor');
-});
-app.run(['auth', function(auth) {
-  // This hooks all auth events to check everything as soon as the app starts
-  auth.hookEvents();
-}]);
-app.run(function($rootScope, auth, store, jwtHelper, $location) {
+}).run(function($rootScope, auth, store, jwtHelper, $location) {
   $rootScope.$on('$locationChangeStart', function() {
 
     var token = store.get('token');
     if (token) {
       if (!jwtHelper.isTokenExpired(token)) {
         if (!auth.isAuthenticated) {
-          //Re-authenticate user if token is valid
           auth.authenticate(store.get('profile'), token);
         }
       } else {
@@ -68,9 +67,10 @@ app.run(function($rootScope, auth, store, jwtHelper, $location) {
         $location.path('/');
       }
     }
+
   });
-});
-app.controller( 'AppCtrl', function AppCtrl ( $scope, $location ) {
+})
+.controller( 'AppCtrl', function AppCtrl ( $scope, $location ) {
   $scope.$on('$routeChangeSuccess', function(e, nextRoute){
     if ( nextRoute.$$route && angular.isDefined( nextRoute.$$route.pageTitle ) ) {
       $scope.pageTitle = nextRoute.$$route.pageTitle + ' | Auth0 Sample' ;
