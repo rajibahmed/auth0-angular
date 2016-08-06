@@ -1,5 +1,7 @@
 # Auth0 and AngularJS
 
+**NOTE:** This branch features version 5 of auth0-angular and its use is not recommended. When using Lock versions 9 and lower, use the master branch of auth0-angular at version 4.2.3. When using Lock versions 10 and higher, use [angular-lock](https://github.com/auth0/angular-lock).
+
 This AngularJS module will help you implement client-side and server-side (API) authentication. It can be used together with [Auth0](https://www.auth0.com) to add support for username/password authentication, enterprise identity providers like Active Directory or SAML and also for social identity providers like Google, Facebook or Salesforce among others to your web, API and native mobile apps.
 
 [Auth0](https://www.auth0.com) is a cloud service that provides a turn-key solution for authentication, authorization and single sign-on.
