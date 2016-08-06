@@ -11,7 +11,6 @@ describe('Auth0 Angular', function () {
                 });
             });
 
-            
             inject(function (auth) { expect(auth).to.be.ok; });
         });
 
@@ -93,6 +92,24 @@ describe('Auth0 Angular', function () {
                 })
                 .then(done);
             $timeout.flush();
+        });
+    });
+
+    describe('link accounts', function() {
+        var auth, $rootScope, $timeout;
+        beforeEach(initAuth0);
+
+        beforeEach(inject(function (_auth_, _$rootScope_, _$timeout_) {
+            auth = _auth_;
+            $rootScope = _$rootScope_;
+            $timeout = _$timeout_;
+        }));
+
+        it('link', function() {
+            auth.linkAccount('token', {}, {connection:'facebook'},
+                function() {
+                expect.to.be.ok;
+            });
         });
     });
 

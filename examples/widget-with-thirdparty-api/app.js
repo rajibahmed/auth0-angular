@@ -23,8 +23,8 @@ angular.module( 'sample', [
 
 
   authProvider.init({
-    domain: YOUR_DOMAIN,
-    clientID: YOUR_CLIENT_ID,
+    domain: AUTH0_DOMAIN,
+    clientID: AUTH0_CLIENT_ID,
     loginUrl: '/login'
   });
 
