@@ -139,10 +139,8 @@
 
                 authUtils.applied = function(fn) {
                     // Adding arguments just due to a bug in Auth0.js.
-                    return function (err, response) {
+                    return function () {
                         // Using variables so that they don't get deleted by UglifyJS
-                        err = err;
-                        response = response;
                         var argsCall = arguments;
                         authUtils.safeApply(function() {
                             fn.apply(null, argsCall);
