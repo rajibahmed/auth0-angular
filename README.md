@@ -1,6 +1,6 @@
 # Auth0 and AngularJS
 
-> *Note:* This SDK is for use with Lock < v9. For using with Lock 10, see the [angular-lock](https://github.com/auth0/angular-auth0) and [angular-auth0](https://github.com/auth0/angular-lock) wrappers.
+> *Note:* This SDK is for use with Lock < v9. For use with Lock 10, see the [angular-lock](https://github.com/auth0/angular-auth0) and [angular-auth0](https://github.com/auth0/angular-lock) wrappers.
 
 This AngularJS module will help you implement client-side and server-side (API) authentication. It can be used together with [Auth0](https://www.auth0.com) to add support for username/password authentication, enterprise identity providers like Active Directory or SAML and also for social identity providers like Google, Facebook or Salesforce among others to your web, API and native mobile apps.
 
