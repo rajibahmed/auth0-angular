@@ -35,7 +35,7 @@ npm install auth0-angular
 
 ````html
 <script type="text/javascript" src="//cdn.auth0.com/js/lock-9.0.js"></script>
-<script type="text/javascript" src="//cdn.auth0.com/w2/auth0-angular-4.2.5.js"></script>
+<script type="text/javascript" src="//cdn.auth0.com/w2/auth0-angular-4.2.6.js"></script>
 ````
 
 > **Warning**: If you use a CDN or download these scripts manually, be sure to include the versions of `auth0-lock` or `auth0.js` that match the versions [specified in the `bower.json`](https://github.com/auth0/auth0-angular/blob/master/bower.json#L7-L8).
