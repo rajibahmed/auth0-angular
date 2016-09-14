@@ -449,7 +449,7 @@
                         }
                     };
 
-                    var errorFn = function(err) {
+                    var errorFn = !errorCallback ? null : function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
