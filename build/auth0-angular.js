@@ -1,6 +1,6 @@
 /**
  * Angular SDK to use with Auth0
- * @version v4.2.3 - 2016-09-07
+ * @version v4.2.3 - 2016-07-08
  * @link https://auth0.com
  * @author Martin Gontovnikas
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -153,8 +153,10 @@
 
                 authUtils.applied = function(fn) {
                     // Adding arguments just due to a bug in Auth0.js.
-                    return function () {
+                    return function (err, response) {
                         // Using variables so that they don't get deleted by UglifyJS
+                        err = err;
+                        response = response;
                         var argsCall = arguments;
                         authUtils.safeApply(function() {
                             fn.apply(null, argsCall);
@@ -620,7 +622,7 @@
                         }
                     };
 
-                    var errorFn = function(err) {
+                    var errorFn = !errorCallback ? null : function(err) {
                         callHandler('loginFailure', { error: err });
                         if (errorCallback) {
                             errorCallback(err);
