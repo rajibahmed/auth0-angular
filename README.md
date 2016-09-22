@@ -2,7 +2,7 @@
 
 ## Deprecation Notice
 
-**This SDK is for use with Lock v9. For use with Lock 10, see the [angular-lock](https://github.com/auth0/angular-auth0) and [angular-auth0](https://github.com/auth0/angular-lock) wrappers.**
+**This SDK is for use with Lock v9. For use with Lock 10, see the [angular-auth0](https://github.com/auth0/angular-auth0) and [angular-lock](https://github.com/auth0/angular-lock) wrappers.**
 
 ---
 
